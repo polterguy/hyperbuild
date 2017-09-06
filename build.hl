@@ -1,0 +1,206 @@
+﻿
+/*
+ * File responsible for creating a build.
+ *
+ * Node below is used to separate the arguments supplued during invocation from
+ * the rest of the file.
+ */
+.signal
+
+
+
+
+
+/*
+ * Deleting any previous "output folders", if they exist.
+ */
+if
+  fetch:x:/0/0?value
+    folder-exists:~/temp/hyperbuild-output/
+
+  /*
+   * Folder exists from before.
+   */
+  delete-folder:~/temp/hyperbuild-output/
+
+
+
+
+
+/*
+ * Creating a temporary output folder.
+ */
+create-folder:~/temp/hyperbuild-output/
+
+
+
+
+
+/*
+ * Creating a "/p5/" folder inside of our temp output folder, which will hold
+ * our main p5.website content.
+ */
+create-folder:~/temp/hyperbuild-output/p5/
+
+
+
+
+
+/*
+ * Copying all relevant files into output folder.
+ *
+ * First creating our "/bin/" folder, and copying all DLLs.
+ */
+create-folder:~/temp/hyperbuild-output/p5/bin/
+list-files:/bin/
+  filter:.dll
+copy-file:x:/@list-files/*?name
+  dest:~/temp/hyperbuild-output/p5/bin/
+
+
+
+
+
+/*
+ * Copying main Default.aspx file.
+ */
+copy-file:/Default.aspx
+  dest:~/temp/hyperbuild-output/p5/
+
+
+
+
+
+/*
+ * Copying our Global.asax file.
+ */
+copy-file:/Global.asax
+  dest:~/temp/hyperbuild-output/p5/
+
+
+
+
+
+/*
+ * Copying README.md
+ */
+copy-file:/README.md
+  dest:~/temp/hyperbuild-output/p5/
+
+
+
+
+
+/*
+ * Copying startup.hl
+ */
+copy-file:/startup.hl
+  dest:~/temp/hyperbuild-output/p5/
+
+
+
+
+
+/*
+ * Copying our "/desktop/" folder.
+ */
+copy-folder:/desktop/
+  dest:~/temp/hyperbuild-output/p5/desktop/
+
+
+
+
+
+/*
+ * Copying our "/modules/" folder.
+ */
+copy-folder:/modules/
+  dest:~/temp/hyperbuild-output/p5/modules/
+
+
+
+
+
+/*
+ * Deleting any ".git" folders, and ".gitignore" files within modules.
+ */
+list-folders:~/temp/hyperbuild-output/p5/modules/
+list-files:x:/@list-folders/*?name
+  filter:.gitignore
+delete-file:x:/@list-files/*?name
+list-folders:x:/@list-folders/*?name
+delete-folder:x:/@list-folders/*/~.git
+
+
+
+
+
+/*
+ * Figuring out which modules caller wanted to include in the main release, and
+ * removing everything else from the main "/modules/" folder in our build.
+ */
+list-folders:~/temp/hyperbuild-output/p5/modules/
+for-each:x:/@list-folders/*?name
+  split:x:/@_dp?value
+    =:/
+  if:x:/@.signal/--/{0}
+    :x:/@split/0/-?name
+    not
+
+    /*
+     * Caller did not want to include currently iterated folder as a module in
+     * his core release.
+     *
+     * Therefor, we wrap it into a zip file, and cryptographically sign our zip file,
+     * with the specified PGP key.
+     */
+    zip:~/temp/hyperbuild-output/{0}.zip
+      :x:/@split/0/-?name
+      src:~/temp/hyperbuild-output/p5/modules/{0}/
+        :x:/@split/0/-?name
+
+    /*
+     * Then we delete the module from the main release.
+     */
+    delete-folder:~/temp/hyperbuild-output/p5/modules/{0}/
+      :x:/@split/0/-?name
+
+
+
+
+
+/*
+ * Creating our default "/users/" folder structure.
+ */
+create-folder:~/temp/hyperbuild-output/p5/users/
+create-folder:~/temp/hyperbuild-output/p5/users/root/
+create-folder:~/temp/hyperbuild-output/p5/users/root/temp/
+create-folder:~/temp/hyperbuild-output/p5/users/root/documents/
+create-folder:~/temp/hyperbuild-output/p5/users/root/documents/private/
+create-folder:~/temp/hyperbuild-output/p5/users/root/documents/public/
+
+
+
+
+
+/*
+ * Creating our default "/common/" folder structure.
+ */
+create-folder:~/temp/hyperbuild-output/p5/common/
+create-folder:~/temp/hyperbuild-output/p5/common/documents/
+create-folder:~/temp/hyperbuild-output/p5/common/documents/private/
+create-folder:~/temp/hyperbuild-output/p5/common/documents/public/
+
+
+
+
+
+/*
+ * At last we can copy our web.config.
+ *
+ * Notice, this is done at last, since this will trigger a recycling of your application
+ * pool, which if you're in e.g. Visual Studio, or using the XSP web server, will
+ * basically crash your site!
+ */
+copy-file:/web.config
+  dest:~/temp/hyperbuild-output/p5/

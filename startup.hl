@@ -1,0 +1,22 @@
+
+/*
+ * File responsible for initializing Hyperbuild.
+ *
+ * Creates three Active Events [p5.io.unroll-path.@HYPERBUILD] - Which evaluates to the "/hyperbuild/" folder, 
+ * and is used as a "path variable".
+ */
+
+
+/*
+ * Creates the "path" Active Event that points to our "/micro/" folder.
+ * This is done in such a way that we can install Micro in any folder we wish.
+ */
+split:x:/..?name
+  =:/
+set:x:/@split/0/-
+join:x:/@split/*?name
+  sep:/
+eval-x:x:/+/*
+create-event:p5.io.unroll-path.@HYPERBUILD
+  return:/{0}
+    :x:/@join?value

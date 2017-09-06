@@ -1,0 +1,128 @@
+﻿
+/*
+ * File responsible for starting Hyperbuild.
+ */
+
+
+
+
+
+/*
+ * Including Micro, adding Awesome Fonts and serious skin.
+ */
+p5.web.include-css-file:@MICRO/media/main.css
+p5.web.include-css-file:@MICRO/media/ext.css
+p5.web.include-css-file:@MICRO/media/fonts.css
+p5.web.include-css-file:@MICRO/media/skins/serious.css
+
+
+
+
+
+/*
+ * Verifying user is logged in as root, and if not, 
+ * forcing the user to login before we proceed.
+ */
+whoami
+if:x:/@whoami/*/role?value
+  !=:root
+
+  /*
+   * User is not logged in as root.
+   */
+  p5.core.login
+
+  /*
+   * Returning early to abort evaluating the rest of our file.
+   */
+  return
+
+
+
+
+
+/*
+ * Iterating through all "/modules/", and creating a check box for each in our
+ * wizard form.
+ */
+list-folders:/modules/
+for-each:x:/@list-folders/*?name
+  split:x:/@_dp?value
+    =:/
+
+  /*
+   * Making sure we check Micro and Bazar by default.
+   */
+  if:x:/@split/0/-?name
+    =:bazar
+    or:x:/@split/0/-?name
+      =:micro
+    add:x:/..for-each/*/add/*/*
+      src:checked
+  eval-x:x:/+/*/*/*
+  add:x:/../*/create-widget/**/micro.widgets.wizard-form
+    src
+      checkbox
+        .data-field:x:/@split/0/-?name
+        info:x:/@split/0/-?name
+
+
+
+
+
+/*
+ * Creating main content container.
+ */
+create-widget:hyperbuild-main-container
+  class:container
+  widgets
+    div
+      class:row air-top
+      widgets
+        div
+          class:col-80 offset-10
+          widgets
+            div
+              class:shaded rounded air-inner
+              widgets
+                h3
+                  innerValue:Hyperbuild
+                micro.widgets.wizard-form:modules
+                  p
+                    innerValue:@"Choose modules you wish to include in your main distribution, and supply the fingerprint of what PGP key
+you want to cyrptographically sign the rest of your modules with."
+                  text:pgp-key
+                    .data-field:pgp-key
+                    info:PGP key
+                    title:Supply your PGP key's fingerprint here
+                    oninit
+
+                      /*
+                       * Setting initial focus to fingerprint textbox.
+                       */
+                      micro.page.set-focus:x:/../*/_event?value
+
+                  text:pgp-pwd
+                    .data-field:pgp-pwd
+                    info:Password
+                    type:password
+                    title:Supply your PGP key's password here
+                    autocomplete:new-password
+                  p
+                    innerValue:Notice, your PGP key needs to exist in your GnuPG database.
+                button
+                  innerValue:Start build process ...
+                  onclick
+
+                    /*
+                     * Serializing above wizard-form, to figure out which modules user
+                     * wants to include in his main build.
+                     */
+                    micro.widgets.wizard-form.value:modules
+
+                    /*
+                     * Evaluating file responsible for creating a build for us.
+                     */
+                    add:x:/../*/micro.evaluate.file
+                      src:x:@"/@micro.widgets.wizard-form.value/*/""=:bool:true""?name"
+                    micro.evaluate.file:@HYPERBUILD/build.hl
