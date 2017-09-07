@@ -265,12 +265,37 @@ for-each:x:/@list-files/*?name
    */
   split:x:/@_dp?value
     =:/
+  eval-x:x:/+/**/.file
   create-widget
     parent:output
     element:a
     style:"display:block;float:left;margin-right:25px;margin-bottom:1rem;"
     href:#
     innerValue:x:/@split/0/-?name
+    onclick
+
+      /*
+       * Forward evaluated above.
+       */
+      .file:x:/@split/0/-?name
+
+      /*
+       * Initiating download.
+       */
+      p5.web.get-location-url
+      p5.html.url-encode:x:/@.file?value
+      p5.web.set-location:{0}?filename={1}
+        :x:/@p5.web.get-location-url?value
+        :x:/@p5.html.url-encode?value
+
+
+
+
+
+/*
+ * Creating a widget at the bottom, that simply helps us getting our styles right.
+ */
 create-widget
   parent:output
-  element:br
+  style:"clear:both;"
+  element:hr

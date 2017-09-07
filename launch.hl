@@ -8,6 +8,56 @@
 
 
 /*
+ * Checking if this is a download, and if so, initiating download of file,
+ * and returning early.
+ */
+p5.web.query.get:filename
+if:x:/@p5.web.query.get/*?value
+
+  /*
+   * User is trying to download a file, first setting "Content-Disposition" header.
+   */
+  p5.web.header.set:Content-Disposition
+    src:@"attachment; filename=""{0}"""
+      :x:/@p5.web.query.get/*?value
+
+  /*
+   * Then setting "Content-Type" for file, which depends upon whether or not file
+   * is a .zip file or a .pgp file.
+   */
+  split:x:/@p5.web.query.get/*?value
+    =:.
+  if:x:/@split/0/-?name
+    =:zip
+
+    /*
+     * Zip file.
+     */
+    p5.web.header.set:Content-Type
+      src:application/zip
+    p5.web.header.set:Content-Transfer-Encoding
+      src:binary
+
+  else
+
+    /*
+     * Cryptographically signed zip file (.pgp).
+     */
+    p5.web.header.set:Content-Type
+      src:application/x-pgp
+
+  /*
+   * Echoing file to client, and returning early.
+   */
+  p5.web.echo-file:~/temp/hyperbuild-output/{0}
+    :x:/@p5.web.query.get/*?value
+  return
+
+
+
+
+
+/*
  * Including Micro, adding Awesome Fonts and serious skin.
  */
 p5.web.include-css-file:@MICRO/media/main.css
@@ -80,20 +130,33 @@ create-widget:hyperbuild-main-container
       style:"display:none;"
       message:"Please wait while we create your build ..."
     div
-      class:row air-top
+      class:row
       widgets
         div
-          class:col-80 offset-10
+          class:col-100
           widgets
             div
               class:shaded rounded air-inner
+              style:"position:relative;"
               widgets
+                a
+                  innerValue:@"<span class=""icon-home""></span>"
+                  style:"position:absolute;top:0;right:0;padding:12px 45px;font-size:1.2rem;border-bottom-left-radius:5px;border-left:solid 1px rgba(0,0,0,.3);border-bottom:solid 1px rgba(0,0,0,.3);background:linear-gradient(#fefefe, #f0f0f0);"
+                  oninit
+
+                    /*
+                     * Making sure we get href attribute correctly.
+                     */
+                    p5.web.get-root-location
+                    set-widget-property:x:/../*/_event?value
+                      href:x:/@p5.web.get-root-location?value
+
                 h3
                   innerValue:Hyperbuild
                 micro.widgets.wizard-form:modules
                   p
                     innerValue:@"Choose the modules you wish to include in your main distribution, and supply the fingerprint/password of which PGP key
-you want to cryptographically sign the rest of your modules with."
+you want to cryptographically sign the rest of your modules with. If you don't want to cryptographically sign any modules, just leave the password field blank."
                   select:pgp-key
                     .data-field:fingerprint
                     info:PGP key
