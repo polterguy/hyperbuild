@@ -237,7 +237,7 @@ create-folder:~/temp/hyperbuild-output/p5/common/documents/public/
  * to avoid having our application pool recycle due to a new web.config.
  */
 list-files::~/temp/hyperbuild-output/p5/
-list-folders::~/temp/hyperbuild-output/p5/
+list-folders:~/temp/hyperbuild-output/p5/
 for-each:x:(/@list-files|/@list-folders)/*?name
   eval-x:x:/+/*/*
   add:x:/../*/zip
@@ -299,3 +299,17 @@ create-widget
   parent:output
   style:"clear:both;"
   element:hr
+
+
+
+
+
+/*
+ * Then displaying SHA1 checksum of main binaries.zip file.
+ */
+p5.crypto.hash.create-sha1-file:~/temp/hyperbuild-output/binaries.zip
+  hex:true
+create-widget
+  parent:output
+  innerValue:SHA1 checksum of binaries.zip; '{0}'
+    :x:/@p5.crypto.hash.create-sha1-file?value
