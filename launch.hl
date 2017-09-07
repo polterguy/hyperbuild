@@ -187,57 +187,61 @@ you want to cryptographically sign the rest of your modules with. If you don't w
                        */
                       micro.page.set-focus:x:/../*/_event?value
 
-                button:start-build
-                  innerValue:Start build
-                  onclick
+                div
+                  class:right
+                  widgets
+                    button:start-build
+                      innerValue:Start build
+                      style:"margin-bottom:0;"
+                      onclick
 
-                    /*
-                     * Making sure we show obscurer, for then to invoke "real" implementation.
-                     */
-                    set-widget-property:build-obscurer
-                      style:"display:block;"
-                    p5.web.send-javascript:@"p5.$('start-build').raise('.onclick');"
+                        /*
+                         * Making sure we show obscurer, for then to invoke "real" implementation.
+                         */
+                        set-widget-property:build-obscurer
+                          style:"display:block;"
+                        p5.web.send-javascript:@"p5.$('start-build').raise('.onclick');"
 
-                  .onclick
+                      .onclick
 
-                    /*
-                     * Serializing above wizard-form, to figure out which modules user
-                     * wants to include in his main build.
-                     */
-                    micro.widgets.wizard-form.value:modules
+                        /*
+                         * Serializing above wizard-form, to figure out which modules user
+                         * wants to include in his main build.
+                         */
+                        micro.widgets.wizard-form.value:modules
 
-                    /*
-                     * Wrapping invocation in a try/catch block, in case an exception occurs.
-                     */
-                    try
+                        /*
+                         * Wrapping invocation in a try/catch block, in case an exception occurs.
+                         */
+                        try
 
-                      /*
-                       * Evaluating file responsible for creating a build for us.
-                       */
-                      add:x:/..try/*/micro.evaluate.file/*/modules
-                        src:x:@"/@micro.widgets.wizard-form.value/*/""=:bool:true""?name"
-                      add:x:/..try/*/micro.evaluate.file
-                        src:x:/@micro.widgets.wizard-form.value/*(/fingerprint|/password)
-                      micro.evaluate.file:@HYPERBUILD/build.hl
-                        modules
+                          /*
+                           * Evaluating file responsible for creating a build for us.
+                           */
+                          add:x:/..try/*/micro.evaluate.file/*/modules
+                            src:x:@"/@micro.widgets.wizard-form.value/*/""=:bool:true""?name"
+                          add:x:/..try/*/micro.evaluate.file
+                            src:x:/@micro.widgets.wizard-form.value/*(/fingerprint|/password)
+                          micro.evaluate.file:@HYPERBUILD/build.hl
+                            modules
 
-                      /*
-                       * Hiding obscurer again, and providing feedback to user.
-                       */
-                      set-widget-property:build-obscurer
-                        style:"display:none;"
-                      micro.windows.info:Build was successfully completed
-                        class:micro-windows-info success
+                          /*
+                           * Hiding obscurer again, and providing feedback to user.
+                           */
+                          set-widget-property:build-obscurer
+                            style:"display:none;"
+                          micro.windows.info:Build was successfully completed
+                            class:micro-windows-info success
 
-                    catch
+                        catch
 
-                      /*
-                       * Hiding obscurer again, and showing exception message to user.
-                       */
-                      set-widget-property:build-obscurer
-                        style:"display:none;"
-                      micro.windows.info:x:/..catch/*/message?value
-                        class:micro-windows-info warning
+                          /*
+                           * Hiding obscurer again, and showing exception message to user.
+                           */
+                          set-widget-property:build-obscurer
+                            style:"display:none;"
+                          micro.windows.info:x:/..catch/*/message?value
+                            class:micro-windows-info warning
 
                 div:output
                   widgets
