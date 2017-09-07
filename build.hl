@@ -211,9 +211,15 @@ for-each:x:/@list-folders/*?name
 create-folder:~/temp/hyperbuild-output/p5/users/
 create-folder:~/temp/hyperbuild-output/p5/users/root/
 create-folder:~/temp/hyperbuild-output/p5/users/root/temp/
+save-file:~/temp/hyperbuild-output/p5/users/root/temp/README.md
+  src:"Temporary folder"
 create-folder:~/temp/hyperbuild-output/p5/users/root/documents/
 create-folder:~/temp/hyperbuild-output/p5/users/root/documents/private/
+save-file:~/temp/hyperbuild-output/p5/users/root/documents/private/README.md
+  src:"Private files"
 create-folder:~/temp/hyperbuild-output/p5/users/root/documents/public/
+save-file:~/temp/hyperbuild-output/p5/users/root/documents/public/README.md
+  src:"Public files"
 
 
 
@@ -225,7 +231,11 @@ create-folder:~/temp/hyperbuild-output/p5/users/root/documents/public/
 create-folder:~/temp/hyperbuild-output/p5/common/
 create-folder:~/temp/hyperbuild-output/p5/common/documents/
 create-folder:~/temp/hyperbuild-output/p5/common/documents/private/
+save-file:~/temp/hyperbuild-output/p5/common/documents/private/README.md
+  src:"Common public files"
 create-folder:~/temp/hyperbuild-output/p5/common/documents/public/
+save-file:~/temp/hyperbuild-output/p5/common/documents/public/README.md
+  src:"Common private files"
 
 
 
