@@ -12,6 +12,15 @@
 
 
 /*
+ * Clearing result widget.
+ */
+clear-widget:output
+
+
+
+
+
+/*
  * Deleting any previous "output folders", if they exist.
  */
 if
@@ -143,7 +152,7 @@ list-folders:~/temp/hyperbuild-output/p5/modules/
 for-each:x:/@list-folders/*?name
   split:x:/@_dp?value
     =:/
-  if:x:/@.signal/--/{0}
+  if:x:/@.signal/--/modules/*/{0}
     :x:/@split/0/-?name
     not
 
@@ -157,6 +166,33 @@ for-each:x:/@list-folders/*?name
     zip:~/temp/hyperbuild-output/{0}.zip
       :x:/@split/0/-?name
       src:~/temp/hyperbuild-output/p5/modules/{0}/
+        :x:/@split/0/-?name
+
+    /*
+     * Notice, if no password is supplied, we entirely drop the signing process of
+     * our zip files, and just leave them as they are.
+     */
+    if:x:/../*/password?value
+      !=:
+
+      /*
+       * Now we can cryptographically sign the module, with the specified PGP key,
+       * extracting it from our GnuPG context, using the supplied password.
+       */
+      eval-x:x:/+|/+/**
+      p5.mime.save:~/temp/hyperbuild-output/{0}.zip.pgp
+        :x:/@split/0/-?name
+        application:zip
+          filename:~/temp/hyperbuild-output/{0}.zip
+            :x:/@split/0/-?name
+          sign
+            fingerprint:x:/../*/fingerprint?value
+              password:x:/../*/password?value
+
+      /*
+       * Deleting zip file.
+       */
+      delete-file:~/temp/hyperbuild-output/{0}.zip
         :x:/@split/0/-?name
 
     /*
@@ -196,11 +232,45 @@ create-folder:~/temp/hyperbuild-output/p5/common/documents/public/
 
 
 /*
- * At last we can copy our web.config.
- *
- * Notice, this is done at last, since this will trigger a recycling of your application
- * pool, which if you're in e.g. Visual Studio, or using the XSP web server, will
- * basically crash your site!
+ * Finally we create our ZIP file, notice, we avoid copying the web.config into
+ * the resulting folder, but instead choose to directly put it into the ZIP file,
+ * to avoid having our application pool recycle due to a new web.config.
  */
-copy-file:/web.config
-  dest:~/temp/hyperbuild-output/p5/
+list-files::~/temp/hyperbuild-output/p5/
+list-folders::~/temp/hyperbuild-output/p5/
+for-each:x:(/@list-files|/@list-folders)/*?name
+  eval-x:x:/+/*/*
+  add:x:/../*/zip
+    src
+      src:x:/@_dp?value
+zip:~/temp/hyperbuild-output/binaries.zip
+  src:/web.config
+
+
+
+
+
+/*
+ * When the build is done, we create all links to download all resulting files.
+ */
+create-widget
+  parent:output
+  element:hr
+list-files:~/temp/hyperbuild-output/
+  filter:.zip|.pgp
+for-each:x:/@list-files/*?name
+
+  /*
+   * Figuring out filename.
+   */
+  split:x:/@_dp?value
+    =:/
+  create-widget
+    parent:output
+    element:a
+    style:"display:block;float:left;margin-right:25px;margin-bottom:1rem;"
+    href:#
+    innerValue:x:/@split/0/-?name
+create-widget
+  parent:output
+  element:br

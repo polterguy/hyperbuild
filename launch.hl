@@ -76,6 +76,9 @@ for-each:x:/@list-folders/*?name
 create-widget:hyperbuild-main-container
   class:container
   widgets
+    micro.widgets.obscurer:build-obscurer
+      style:"display:none;"
+      message:"Please wait while we create your build ..."
     div
       class:row air-top
       widgets
@@ -89,30 +92,50 @@ create-widget:hyperbuild-main-container
                   innerValue:Hyperbuild
                 micro.widgets.wizard-form:modules
                   p
-                    innerValue:@"Choose modules you wish to include in your main distribution, and supply the fingerprint of what PGP key
-you want to cyrptographically sign the rest of your modules with."
-                  text:pgp-key
-                    .data-field:pgp-key
+                    innerValue:@"Choose the modules you wish to include in your main distribution, and supply the fingerprint/password of which PGP key
+you want to cryptographically sign the rest of your modules with."
+                  select:pgp-key
+                    .data-field:fingerprint
                     info:PGP key
-                    title:Supply your PGP key's fingerprint here
+                    title:Choose your PGP key's fingerprint here
                     oninit
 
                       /*
-                       * Setting initial focus to fingerprint textbox.
+                       * Creating one "option" widget for each private key in GnuPG database.
+                       */
+                      p5.crypto.list-private-keys
+                      for-each:x:/-/*
+                        create-widget
+                          parent:x:/../*/_event?value
+                          element:option
+                          innerValue:x:/@_dp/#?name
+
+                  text:pgp-pwd
+                    .data-field:password
+                    info:Password
+                    type:password
+                    title:Supply your PGP key's password here, or leave it empty if you don't want to cryptographically sign your modules.
+                    autocomplete:new-password
+                    onkeydown:@"if (event.keyCode == 13) {p5.$('start-build').raise('onclick');return false;}"
+                    oninit
+
+                      /*
+                       * Setting initial focus to password textbox.
                        */
                       micro.page.set-focus:x:/../*/_event?value
 
-                  text:pgp-pwd
-                    .data-field:pgp-pwd
-                    info:Password
-                    type:password
-                    title:Supply your PGP key's password here
-                    autocomplete:new-password
-                  p
-                    innerValue:Notice, your PGP key needs to exist in your GnuPG database.
-                button
-                  innerValue:Start build process ...
+                button:start-build
+                  innerValue:Build everything
                   onclick
+
+                    /*
+                     * Making sure we show obscurer, for then to invoke "real" implementation.
+                     */
+                    set-widget-property:build-obscurer
+                      style:"display:block;"
+                    p5.web.send-javascript:@"p5.$('start-build').raise('.onclick');"
+
+                  .onclick
 
                     /*
                      * Serializing above wizard-form, to figure out which modules user
@@ -121,8 +144,37 @@ you want to cyrptographically sign the rest of your modules with."
                     micro.widgets.wizard-form.value:modules
 
                     /*
-                     * Evaluating file responsible for creating a build for us.
+                     * Wrapping invocation in a try/catch block, in case an exception occurs.
                      */
-                    add:x:/../*/micro.evaluate.file
-                      src:x:@"/@micro.widgets.wizard-form.value/*/""=:bool:true""?name"
-                    micro.evaluate.file:@HYPERBUILD/build.hl
+                    try
+
+                      /*
+                       * Evaluating file responsible for creating a build for us.
+                       */
+                      add:x:/..try/*/micro.evaluate.file/*/modules
+                        src:x:@"/@micro.widgets.wizard-form.value/*/""=:bool:true""?name"
+                      add:x:/..try/*/micro.evaluate.file
+                        src:x:/@micro.widgets.wizard-form.value/*(/fingerprint|/password)
+                      micro.evaluate.file:@HYPERBUILD/build.hl
+                        modules
+
+                      /*
+                       * Hiding obscurer again, and providing feedback to user.
+                       */
+                      set-widget-property:build-obscurer
+                        style:"display:none;"
+                      micro.windows.info:Build was successfully completed
+                        class:micro-windows-info success
+
+                    catch
+
+                      /*
+                       * Hiding obscurer again, and showing exception message to user.
+                       */
+                      set-widget-property:build-obscurer
+                        style:"display:none;"
+                      micro.windows.info:x:/..catch/*/message?value
+                        class:micro-windows-info warning
+
+                div:output
+                  widgets
