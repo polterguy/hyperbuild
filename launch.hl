@@ -188,7 +188,7 @@ you want to cryptographically sign the rest of your modules with. If you don't w
                       micro.page.set-focus:x:/../*/_event?value
 
                 button:start-build
-                  innerValue:Build everything
+                  innerValue:Start build
                   onclick
 
                     /*
