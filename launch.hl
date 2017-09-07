@@ -157,6 +157,9 @@ create-widget:hyperbuild-main-container
                   p
                     innerValue:@"Choose the modules you wish to include in your main distribution, and supply the fingerprint/password of which PGP key
 you want to cryptographically sign the rest of your modules with. If you don't want to cryptographically sign any modules, just leave the password field blank."
+                  p
+                    innerValue:@"Notice, you might want to edit your <code>'/modules/bazar/configuration/bazars.hl'</code> file, and have it point to where you wish to host your Bazar -
+In addition to adding your own PGP key's fingerprint into the <code>'/modules/bazar/configuration/trusted-app-distributors.hl'</code> file, before you build the system, if you intend to also host your own Bazar."
                   select:pgp-key
                     .data-field:fingerprint
                     info:PGP key
