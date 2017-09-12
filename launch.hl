@@ -58,7 +58,7 @@ if:x:/@p5.web.query.get/*?value
 
 
 /*
- * Including Micro, adding Awesome Fonts and serious skin.
+ * Including Micro, adding Awesome Fonts, and serious skin.
  */
 p5.web.include-css-file:@MICRO/media/main.css
 p5.web.include-css-file:@MICRO/media/ext.css
@@ -107,14 +107,46 @@ for-each:x:/@list-folders/*?name
     =:bazar
     or:x:/@split/0/-?name
       =:micro
+
+    /*
+     * "micro" or "bazar" iteration, making sure we by default check these guys.
+     */
+    add:x:/..for-each/*/insert-before/*/*
+      src:checked
+
+  else
+
+    /*
+     * Neither "micro" nor "bazar" iteration, making sure we by default check these guys
+     * in the "sign module" checkboxes.
+     */
     add:x:/..for-each/*/add/*/*
       src:checked
+
+  /*
+   * Adding our checkbox into our wizard form, twice, to make it possible to
+   * both put modules into main build, in addition to putting them into PGP signed module
+   * list.
+   */
   eval-x:x:/+/*/*/*
-  add:x:/../*/create-widget/**/micro.widgets.wizard-form
+  insert-before:x:/../*/create-widget/**/micro.widgets.wizard-form/*/hr/[0,1]
     src
       checkbox
         .data-field:x:/@split/0/-?name
         info:x:/@split/0/-?name
+
+  /*
+   * Adding to "sign module list".
+   */
+  eval-x:x:/+/*/*/*
+  add:x:/../*/create-widget/**/micro.widgets.wizard-form
+    src
+      checkbox
+        .data-field:pgp-signed-{0}
+          :x:/@split/0/-?name
+        info:x:/@split/0/-?name
+        disabled
+        .sign
 
 
 
@@ -136,34 +168,94 @@ create-widget:hyperbuild-main-container
           class:col-100
           widgets
             div
-              class:shaded rounded air-inner
-              style:"position:relative;"
+              class:right
               widgets
-                a
+                button
                   innerValue:@"<span class=""icon-home""></span>"
-                  style:"position:absolute;top:0;right:0;padding:12px 45px;font-size:1.2rem;border-bottom-left-radius:5px;border-left:solid 1px rgba(0,0,0,.3);border-bottom:solid 1px rgba(0,0,0,.3);background:linear-gradient(#fefefe, #f0f0f0);"
-                  oninit
+                  onclick
 
                     /*
                      * Making sure we get href attribute correctly.
                      */
                     p5.web.get-root-location
-                    set-widget-property:x:/../*/_event?value
-                      href:x:/@p5.web.get-root-location?value
+                    p5.web.set-location:x:/-?value
+
+    div
+      class:row
+      widgets
+        div
+          class:col-100
+          widgets
+            div
+              class:shaded rounded air-inner
+              widgets
 
                 h3
                   innerValue:Hyperbuild
                 micro.widgets.wizard-form:modules
                   p
-                    innerValue:@"Choose the modules you wish to include in your main distribution, and supply the fingerprint/password of which PGP key
-you want to cryptographically sign the rest of your modules with. If you don't want to cryptographically sign any modules, just leave the password field blank."
+                    innerValue:@"Choose which modules you wish to include in your main distribution."
+                  hr
                   p
-                    innerValue:@"Notice, you might want to edit your <code>'/modules/bazar/configuration/bazars.hl'</code> file, and have it point to where you wish to host your Bazar -
-In addition to adding your own PGP key's fingerprint into the <code>'/modules/bazar/configuration/trusted-app-distributors.hl'</code> file, before you build the system, if you intend to also host your own Bazar."
+                    innerValue:@"Choose if you'd like to cryptographically sign any other modules, for distributing in your own Bazar."
+                  checkbox:sign-modules
+                    .data-field:signed-modules
+                    info:Sign modules
+                    title:Check this button if you wish to sign other modules cryptographically with your own PGP key
+                    onchange
+
+                      /*
+                       * Checking if button was turned on or off, and enabling PGP key selector accordingly.
+                       */
+                      get-widget-property:x:/../*/_event?value
+                        checked
+                      if:x:/@get-widget-property/*/*
+
+                        /*
+                         * Enabling signing of modules.
+                         */
+                        delete-widget-property:pgp-key
+                          disabled
+                        delete-widget-property:pgp-pwd
+                          disabled
+
+                        /*
+                         * Finding all "sign module checkboxes", and enabling them.
+                         */
+                        p5.web.widgets.find:modules
+                          .sign
+                        delete-widget-property:x:/@p5.web.widgets.find/*/*?value
+                          disabled
+
+                        /*
+                         * Providing feedback to user.
+                         */
+                        micro.windows.info:Please choose a PGP key, and supply its password
+                          class:micro-windows-info success
+
+                      else
+
+                        /*
+                         * Disabling signing of modules.
+                         */
+                        set-widget-property:pgp-key
+                          disabled
+                        set-widget-property:pgp-pwd
+                          disabled
+
+                        /*
+                         * Finding all "sign module checkboxes", and disabling them.
+                         */
+                        p5.web.widgets.find:modules
+                          .sign
+                        set-widget-property:x:/@p5.web.widgets.find/*/*?value
+                          disabled
+
                   select:pgp-key
                     .data-field:fingerprint
                     info:PGP key
                     title:Choose your PGP key's fingerprint here
+                    disabled
                     oninit
 
                       /*
@@ -183,6 +275,7 @@ In addition to adding your own PGP key's fingerprint into the <code>'/modules/ba
                     title:Supply your PGP key's password here, or leave it empty if you don't want to cryptographically sign your modules.
                     autocomplete:new-password
                     onkeydown:@"if (event.keyCode == 13) {p5.$('start-build').raise('onclick');return false;}"
+                    disabled
                     oninit
 
                       /*
@@ -222,9 +315,39 @@ In addition to adding your own PGP key's fingerprint into the <code>'/modules/ba
                            * Evaluating file responsible for creating a build for us.
                            */
                           add:x:/..try/*/micro.evaluate.file/*/modules
-                            src:x:@"/@micro.widgets.wizard-form.value/*/""=:bool:true""?name"
-                          add:x:/..try/*/micro.evaluate.file
-                            src:x:/@micro.widgets.wizard-form.value/*(/fingerprint|/password)
+                            src:x:@"/@micro.widgets.wizard-form.value/*/""=:bool:true""(!/~pgp-signed!/signed-modules)?name"
+
+                          /*
+                           * Sanity checking input.
+                           */
+                          if:x:/@micro.widgets.wizard-form.value/*/signed-modules?value
+                            and:x:/@micro.widgets.wizard-form.value/*/password?value
+                              =:
+                            micro.windows.info:Please supply a password for your PGP key!
+                              class:micro-windows-info warning
+                            set-widget-property:build-obscurer
+                              style:"display:none;"
+                            return
+                          if:x:/@micro.widgets.wizard-form.value/*/password?value
+                            and:x:/@micro.widgets.wizard-form.value/*/password?value
+                              !=:
+
+                            /*
+                             * User supplied a password, and wants to cryptographically sign some modules.
+                             */
+                            add:x:/..try/*/micro.evaluate.file
+                              src:x:/@micro.widgets.wizard-form.value/*(/fingerprint|/password)
+                            add:x:/..try/*/micro.evaluate.file
+                              src:signed
+                            for-each:x:@"/@micro.widgets.wizard-form.value/*/""=:bool:true""(/~pgp-signed!/signed-modules)?name"
+                              split:x:/@_dp?value
+                                =:pgp-signed-
+                              add:x:/..try/*/micro.evaluate.file/*/signed
+                                src:x:/@split/0?name
+
+                          /*
+                           * Evaluating file responsible for creating our build.
+                           */
                           micro.evaluate.file:@HYPERBUILD/build.hl
                             modules
 

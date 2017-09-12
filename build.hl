@@ -138,7 +138,7 @@ list-files:x:/@list-folders/*?name
   filter:.gitignore
 delete-file:x:/@list-files/*?name
 list-folders:x:/@list-folders/*?name
-delete-folder:x:/@list-folders/*/~.git
+delete-folder:x:@"/@list-folders/*/""~/.git/"""
 
 
 
@@ -152,12 +152,11 @@ list-folders:~/temp/hyperbuild-output/p5/modules/
 for-each:x:/@list-folders/*?name
   split:x:/@_dp?value
     =:/
-  if:x:/@.signal/--/modules/*/{0}
+  if:x:/@.signal/--/signed/*/{0}
     :x:/@split/0/-?name
-    not
 
     /*
-     * Caller did not want to include currently iterated folder as a module in
+     * Caller wanted to include currently iterated folder as a module in
      * his core release.
      *
      * Therefor, we wrap it into a zip file, and cryptographically sign our zip file,
@@ -195,9 +194,13 @@ for-each:x:/@list-folders/*?name
       delete-file:~/temp/hyperbuild-output/{0}.zip
         :x:/@split/0/-?name
 
-    /*
-     * Then we delete the module from the main release.
-     */
+  /*
+   * Then we delete the module from the main release, unless user for some reasons
+   * wanted to also distribute it in his main binaries.zip file.
+   */
+  if:x:/@.signal/--/modules/*/{0}
+    :x:/@split/0/-?name
+    not
     delete-folder:~/temp/hyperbuild-output/p5/modules/{0}/
       :x:/@split/0/-?name
 
