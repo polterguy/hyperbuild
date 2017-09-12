@@ -46,11 +46,12 @@ data in this file, you should probably **not include your web.config** file in y
 an actual working web.config file if you ommit this file, is up to you to solve yourself.
 
 However, the default web.config file, should not in general contain any sensitive data, since it relies upon MySQL installed, with
-an empty root password, and no network drivers installed. In general, this shouldn't be a problem, unless you've got some customisations
-of your system, which is outside of the scope of Hyperbuild.
+an empty root password, and no network drivers installed. In general, including the web.config file shouldn't be a problem, unless 
+you've got some customisations of your system, which is outside of the scope of Hyperbuild.
 
 ### Additional modules
 
+If you include the _"bazar"_ into your main build, you are given the option to build additional modules yourself.
 This is normally only relevant if you wish to create your own Bazar implementation - At which point, you'd normally have to 
 cryptographically sign your additional modules, with your own private PGP key. This is a security feature in the Bazar, eliminating having
 your users downloading and installing malicious code - Due to the only code that is allowed to be installed through the Bazar, are
