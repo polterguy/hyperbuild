@@ -253,6 +253,51 @@ for-each:x:(/@list-files|/@list-folders)/*?name
 
 
 /*
+ * Checking if bazar exists in main distro, and user wanted to build additional
+ * modules, and if so, we exchange the content of the "bazars.hl" file, to the
+ * given [bazar] argument's value.
+ */
+if
+  fetch:x:/0/0?value
+    folder-exists:~/temp/hyperbuild-output/p5/modules/bazar/configuration/
+  and:x:/@.signal/--/bazar?value
+
+  /*
+   * An explicit bazar declaration was supplied, and caller included Bazar in his
+   * main distribution - Hence we replace the content of the included "bazars.hl"
+   * file with whatever [bazar] argument caller supplied.
+   */
+  save-file:~/temp/hyperbuild-output/p5/modules/bazar/configuration/bazars.hl
+    src:x:/@.signal/--/bazar?value
+
+  /*
+   * Then we update the "trusted-app-distributors.hl" file to contain the fingerprint
+   * of the key the user supplied, if any.
+   */
+  if:x:/../*/password?value
+    and:x:/../*/password?value
+      !=:
+
+    /*
+     * User supplied a [password] argument, hence we exchange the content of our
+     * "trusted-app-distributors.hl" file with his [fingerprint], and his key-id.
+     */
+    _trusted
+    add:x:/@_trusted
+      src:x:/../*/fingerprint
+    p5.crypto.get-key-details:x:/../*/fingerprint?value
+    add:x:/@_trusted/*
+      src:@"key-id:0x{0}"
+        :x:/@p5.crypto.get-key-details/*/*/id?value
+    lambda2hyper:x:/@_trusted/*
+    save-file:~/temp/hyperbuild-output/p5/modules/bazar/configuration/trusted-app-distributors.hl
+      src:x:/@lambda2hyper?value
+
+
+
+
+
+/*
  * Checking if caller specified he wanted to include his web.config file.
  */
 if:x:/@.signal/--/include-web-config?value

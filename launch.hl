@@ -243,6 +243,14 @@ create-widget:hyperbuild-main-container
                         delete-widget-property:x:/@p5.web.widgets.find/*/*?value
                           disabled
 
+                        /*
+                         * Finding "bazar declaration" textarea, and enabling it.
+                         */
+                        p5.web.widgets.find:modules
+                          .data-field:bazar
+                        delete-widget-property:x:/@p5.web.widgets.find/*/*?value
+                          disabled
+
                       else
 
                         /*
@@ -258,6 +266,14 @@ create-widget:hyperbuild-main-container
                          */
                         p5.web.widgets.find:modules
                           .sign
+                        set-widget-property:x:/@p5.web.widgets.find/*/*?value
+                          disabled
+
+                        /*
+                         * Finding "bazar declaration" textarea, and disabling it.
+                         */
+                        p5.web.widgets.find:modules
+                          .data-field:bazar
                         set-widget-property:x:/@p5.web.widgets.find/*/*?value
                           disabled
 
@@ -286,6 +302,25 @@ create-widget:hyperbuild-main-container
                     autocomplete:new-password
                     onkeydown:@"if (event.keyCode == 13) {p5.$('start-build').raise('onclick');return false;}"
                     disabled
+                  label
+                    innerValue:Supply an optional declaration for your Bazar(s).
+                    for:bazar-declaration
+                  textarea:bazar-declaration
+                    .data-field:bazar
+                    info:Bazar declaration ...
+                    rows:7
+                    disabled
+                    oninit
+
+                      /*
+                       * Loading the default Bazar declaration file, and changing the content
+                       * of textarea to lambda of file.
+                       */
+                      load-file:/modules/bazar/configuration/bazars.hl
+                      lambda2hyper:x:/@load-file/*/*
+                      set-widget-property:x:/../*/_event?value
+                        innerValue:x:/@lambda2hyper?value
+
                 div
                   class:right
                   widgets
@@ -368,6 +403,14 @@ create-widget:hyperbuild-main-container
                                */
                               add:x:/..try/*/micro.evaluate.file
                                 src:x:/@micro.widgets.wizard-form.value/*(/fingerprint|/password)
+
+                            /*
+                             * Passing in the "Bazar declaration" to build process.
+                             */
+                            eval-x:x:/+/*/*
+                            add:x:/..try/*/micro.evaluate.file
+                              src
+                                bazar:x:/@micro.widgets.wizard-form.value/*/bazar?value
 
                           /*
                            * Evaluating file responsible for creating our build.
