@@ -71,7 +71,8 @@ own Bazar.
 
 **Notice** - If you choose to make the _"Bazar"_ a part of your main distribution, but you do not cryptographically sign your own modules, the
 default P5 Bazar will be used in your main distribution. This is the main P5 Bazar, where all the apps are signed with my PGP key, which 
-is `thomas@gaiasoul.com` - and has a fingerprint value of `5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD`.
+is `thomas@gaiasoul.com` - and has a fingerprint value of `5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD`. This is probably not something you'd
+want to do for the record!
 
 ### How the Bazar work
 
@@ -116,11 +117,12 @@ Bazar content files, that have not been changed, and hence will significantly sp
 #### The Bazar content file(s)
 
 This file contains all your additional modules, that the user can install, either for a fee or gratis into his system. It has a structure, where
-each app is declared as an **[app]** node, in addition to a friendly _"name"_ at the top.
+each app is declared as an **[app]** node, in addition to a friendly _"name"_ for your Bazar at the top.
 
 This is the file that needs to be updated every time you add a new module, and or update an existing module, to allow your users to update their 
 systems. When you have created your build, an example Bazar content file will be shown to you, which you can modify as you see fit. This file must
-have a special structure, where each **[app]** declaration must resemble the following.
+have a special structure, resembling something similar to the following. Notice, its content is dependent upon which modules you wish to distribute,
+and which PGP key you have used to sign your additional modules. In addition to of course, the URLs where your apps are phycically located on the web.
 
 ```
 
@@ -160,7 +162,7 @@ app:some-app-unique-id
   local-url:sephia-five
 
   // And image that will be shown for your app, before installation.
-  image:"https://phosphorusfive.files.wordpress.com/2017/08/vault-icon-2.png"
+  image:"https://my-server.com/some-image.png"
 
   // The PGP key's fingerprint, for the PGP key that was used to sign this particular app.
   developer-key:5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD
