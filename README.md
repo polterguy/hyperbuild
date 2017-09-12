@@ -39,10 +39,24 @@ folder, implying that any custom modules you have created yourself, will be poss
 It is definitely much easier to build a _"static"_ system, than it is to create a fully fledged Bazar system, with your own
 Bazar implementation. For most users, this would probably suffice, and you can simply ignore everything below here.
 
-**Notice** - By default, the build process will include your _"web.config"_ file. If you have passwords, or other types of sensitive
-data in this file, you should probably **not include your web.config** file in your main release build. How you wish to distribute
+**WARNING** - By default, the build process will include your _"web.config"_ file. If you have passwords, or other types of sensitive
+data in this file, you should probably **not include your web.config** file in your main release build. How you want to distribute
 an actual working web.config file if you ommit this file, is up to you to solve yourself.
 
 However, the default web.config file, should not in general contain any sensitive data, since it relies upon MySQL installed, with
 an empty root password, and no network drivers installed. In general, this shouldn't be a problem, unless you've got some customisations
 of your system, which is outside of the scope of Hyperbuild.
+
+### Additional modules
+
+This is normally only relevant if you wish to create your own Bazar implementation - At which point, you'd normally have to 
+cryptographically sign your additional modules, with your own private PGP key. This is a security feature in the Bazar, eliminating having
+your users downloading and installing malicious code - Due to the only code that is allowed to be installed through the Bazar, are
+programs that have been explicitly cryptographically signed by a trusted private PGP key.
+
+The system will create one additional .zip file for each of these additional modules you choose to build. If you choose to cryptographically
+sign these modules, which is done by choosing a private PGP key, **and supplying a password**, to have your private PGP key released from your 
+GnuPG installation - These additional zip files will be cryptographically signed with your own private PGP key, and be 
+named _"some-module.zip.pgp"_, allowing you to download these files after the build process has finished, and distribute them through your 
+own Bazar.
+
