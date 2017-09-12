@@ -122,7 +122,7 @@ name:My cool repository
 /*
  * Some App
  */
-app:some-unique-app-id
+app:some-app-unique-id
 
   // Name of your app.
   name:Some App
