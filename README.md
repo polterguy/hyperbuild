@@ -52,6 +52,8 @@ you've got some customisations of your system, which is outside of the scope of 
 When you have created your _"binaries.zip"_ release file, you can use the [following script](https://github.com/polterguy/phosphorusfive/blob/master/install.sh) as 
 a template for installing your zip file on Linux/Ubuntu servers. Probably the only thing you'll need to change, is the URL inside of
 the `wget` invocation, and have it point to your own _"binaries.zip"_ file, for then to distribute/consume your own/customised _"install.sh"_ script.
+You'd probably want to write down the SHA1 checksum, and inform your users, or any sys-admins wanting to install your binaries.zip, about its
+value - To prevent an adversary injecting malicious downloads between the end client-server, and your downloadable zip file.
 
 ### Additional modules
 
