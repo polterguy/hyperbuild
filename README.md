@@ -55,10 +55,10 @@ the `wget` invocation, and have it point to your own _"binaries.zip"_ file, for 
 You'd probably want to write down the SHA1 checksum, and inform your users, or any sys-admins wanting to install your binaries.zip, about its
 value - To prevent an adversary injecting malicious downloads between the end client-server, and your downloadable zip file.
 
-### Additional modules
+### Additional modules - Creating your own Bazar
 
 If you include the _"bazar"_ into your main build, you are given the option to build additional modules yourself.
-This is normally only relevant if you wish to create your own Bazar implementation - At which point, you'd normally have to 
+This is normally only relevant if you wish to create your own Bazar implementation - At which point, you'd normally want to 
 cryptographically sign your additional modules, with your own private PGP key. This is a security feature in the Bazar, eliminating having
 your users downloading and installing malicious code - Due to the only code that is allowed to be installed through the Bazar, are
 programs that have been explicitly cryptographically signed by a trusted private PGP key.
@@ -70,7 +70,8 @@ named _"some-module.zip.pgp"_, allowing you to download these files after the bu
 own Bazar.
 
 **Notice** - If you choose to make the _"Bazar"_ a part of your main distribution, but you do not cryptographically sign your own modules, the
-default P5 Bazar will be used in your main distribution. This is the main P5 Bazar, where all the apps are signed with my PGP key.
+default P5 Bazar will be used in your main distribution. This is the main P5 Bazar, where all the apps are signed with my PGP key, which 
+is `thomas@gaiasoul.com` - and has a fingerprint value of `5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD`.
 
 ### How the Bazar work
 
