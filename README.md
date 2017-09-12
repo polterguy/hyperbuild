@@ -106,6 +106,13 @@ systems. When you have created your build, an example Bazar content file will be
 have a special structure, where each **[app]** declaration must resemble the following.
 
 ```
+
+/*
+ * Friendly displayed name of your repository.
+ */
+name:My cool repository
+
+
 /*
  * Some App
  */
