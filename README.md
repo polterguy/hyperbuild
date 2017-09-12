@@ -124,16 +124,7 @@ app:some-unique-app-id
   url:"https://github.com/polterguy/sephia-five/releases/download/v4.9/sephia-five.zip.pgp"
 
   // A more detailed description of your app. Notice, use Markdown here if you wish!
-  author-readme:@"Sephia Five is a cryptographically secure webmail and email client, with PGP support, which is built with your privacy in mind. Among other things, it does not display HTML emails, to avoid marketing gibberish and _'crapware'_, interrupting your privacy. It has the following features.
-
-* PGP cryptography
-* Virus and malware protection
-* Phishing protection
-* Extremly easy to use
-
-You can see a video demonstrating some of its features [here](https://www.youtube.com/watch?v=0F4SVEoD1HE). Sephia Five is Free Software, Open Source, and Gratis for individuals.
-
-Sephia Five is developed and maintained by Thomas Hansen - thomas@gaiasoul.com, the PGP fingerprint for its developer is '5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD'"
+  author-readme:@"Longer description goes here!! Notice, use **Markdown** if you wish!"
 
   // Price of your app, and/or license.
   price:Free/GPL
