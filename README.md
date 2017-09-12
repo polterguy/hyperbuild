@@ -27,12 +27,11 @@ the instructions on how to use it.
 This is your most important settings, and declares how you want your main distribution to be like. For most people, understanding
 these parts is enough - Unless you want to host your own Bazar.
 
-First you must choose which modules you want to include in your main distribution zip file. By default, the modules
-selected for you are only the _"bazar"_ and _"micro"_. _"micro"_ is normally crucial, since most P5 modules depends
-upon [Micro](https://github.com/polterguy/micro) being installed to function correctly. However, if you don't want to feature 
-your own Bazar, you can remove the _"bazar"_ module from your main distribution. If you don't include the Bazar in your main 
-configuration, you will have a _"static"_ system, without any Bazar integration - Which is probably quite useful, if all you want to
-do is to create and distribute your own apps, and/or any of the integrated apps, as a stand alone web application/operating system.
+First you must choose which modules you want to include in your main distribution zip file. By default, only _"micro"_ is selected. 
+_"micro"_ is normally crucial, since most P5 modules depends upon [Micro](https://github.com/polterguy/micro) being installed to 
+function properly. If you don't include the Bazar in your main configuration, you will have a _"static"_ system, without any Bazar 
+integration - Which is probably quite useful, if all you want to do is to create and distribute your own apps, and/or any of the 
+integrated apps, as a stand alone web application/operating system.
 
 Whichever other modules you include, will be included by default, in your own distribution, in your main .zip file, 
 for your own Phosphorus Five distribution. The system works by traversing all folders inside of your _"p5.webapp/modules/"_

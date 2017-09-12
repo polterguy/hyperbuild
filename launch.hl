@@ -101,23 +101,22 @@ for-each:x:/@list-folders/*?name
     =:/
 
   /*
-   * Making sure we check Micro and Bazar by default.
+   * Making sure we check Micro by default.
    */
   if:x:/@split/0/-?name
-    =:bazar
-    or:x:/@split/0/-?name
-      =:micro
+    =:micro
 
     /*
-     * "micro" or "bazar" iteration, making sure we by default check these guys.
+     * "micro" iteration, making sure we by default check it by default.
      */
     add:x:/..for-each/*/insert-before/*/*
       src:checked
 
-  else
+  else-if:x:/@split/0/-?name
+    !=:bazar
 
     /*
-     * Neither "micro" nor "bazar" iteration, making sure we by default check these guys
+     * Not "micro" iteration, making sure we by default check these guys
      * in the "sign module" checkboxes.
      */
     add:x:/..for-each/*/add/*/*
