@@ -30,7 +30,7 @@ selected for you are only the _"bazar"_ and _"micro"_. _"micro"_ is normally cru
 upon Micro being installed to function correctly. However, if you don't want to feature your own Bazar, you can
 remove the _"bazar"_ module from your main distribution. If you don't include the Bazar in your main configuration,
 you will have a _"static"_ system, without any Bazar integration - Which is probably quite useful, if all you want to
-do is to create and distribute your own apps, and/or any of the integrated apps, as a stand alone web application.
+do is to create and distribute your own apps, and/or any of the integrated apps, as a stand alone web application/operating system.
 
 Whichever other modules you include, will be included by default, in your own distribution, in your main .zip file, 
 for your own Phosphorus Five distribution. The system works by traversing all folders inside of your _"p5.webapp/modules/"_
@@ -38,3 +38,11 @@ folder, implying that any custom modules you have created yourself, will be poss
 
 It is definitely much easier to build a _"static"_ system, than it is to create a fully fledged Bazar system, with your own
 Bazar implementation. For most users, this would probably suffice, and you can simply ignore everything below here.
+
+**Notice** - By default, the build process will include your _"web.config"_ file. If you have passwords, or other types of sensitive
+data in this file, you should probably **not include your web.config** file in your main release build. How you wish to distribute
+an actual working web.config file if you ommit this file, is up to you to solve yourself.
+
+However, the default web.config file, should not in general contain any sensitive data, since it relies upon MySQL installed, with
+an empty root password, and no network drivers installed. In general, this shouldn't be a problem, unless you've got some customisations
+of your system, which is outside of the scope of Hyperbuild.
