@@ -190,7 +190,7 @@ for-each:x:/@list-folders/*?name
 /*
  * Adding our "include web.config" checkbox.
  */
-insert-before:x:/../*/create-widget/**/micro.widgets.wizard-form/*/hr/[0,1]
+insert-before:x:/../*/create-widget/**/micro.widgets.wizard-form/*/collection
   src
     br
     checkbox
