@@ -128,9 +128,10 @@ app:some-unique-app-id
   condition:some-app.condition-to-check-if-app-is-installed
 
   // Link to PGP signed zip file for downloading and installing app.
-  url:"https://github.com/polterguy/sephia-five/releases/download/v4.9/sephia-five.zip.pgp"
+  url:"https://my-server.com/modules/some-app.zip.pgp"
 
-  // A more detailed description of your app. Notice, use Markdown here if you wish!
+  // A more detailed description of your app.
+  // Notice, use Markdown here if you wish.
   author-readme:@"Longer description goes here!! Notice, use **Markdown** if you wish!"
 
   // Price of your app, and/or license.
@@ -147,4 +148,8 @@ app:some-unique-app-id
   // The PGP key's fingerprint, for the PGP key that was used to sign this particular app.
   developer-key:5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD
 ```
+
+**Notice** - Although the Bazar itself supports having multiple _"trusted app distributors"_, Hyperbuild does not support creating
+a trusted distributor file with more than one PGP key within. If you wish to create a distribution with multiple trusted
+distributors, feel free to modify the _"trusted-app-distributors.hl"_ file by hand yourself.
 
