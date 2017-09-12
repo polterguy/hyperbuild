@@ -39,7 +39,7 @@ for your own Phosphorus Five distribution. The system works by traversing all fo
 folder, implying that any custom modules you have created yourself, will be possible to include in your main distribution here.
 
 It is definitely much easier to build a _"static"_ system, than it is to create a fully fledged Bazar system, with your own
-Bazar implementation. For most users, this would probably suffice, and you can simply ignore everything below here.
+Bazar implementation. For most users, this would probably suffice, and you can simply ignore everything below this sub-header.
 
 **WARNING** - By default, the build process will include your _"web.config"_ file. If you have passwords, or other types of sensitive
 data in this file, you should probably **not include your web.config** file in your main release build. How you want to distribute
@@ -48,6 +48,9 @@ an actual working web.config file if you ommit this file, is up to you to solve 
 However, the default web.config file, should not in general contain any sensitive data, since it relies upon MySQL installed, with
 an empty root password, and no network drivers installed. In general, including the web.config file shouldn't be a problem, unless 
 you've got some customisations of your system, which is outside of the scope of Hyperbuild.
+
+When you have created your _"binaries.zip"_ release file, you can use the [following script](https://github.com/polterguy/phosphorusfive/blob/master/install.sh) as 
+a template for installing your zip file on Linux/Ubuntu servers.
 
 ### Additional modules
 

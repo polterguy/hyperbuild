@@ -257,7 +257,7 @@ create-widget:hyperbuild-main-container
                         innerValue:Additional modules
                       checkbox:sign-modules
                         .data-field:additional-modules
-                        info:Build additional modules
+                        info:Build Bazar downloadable modules
                         title:Check this button if you wish to sign other modules cryptographically with your own PGP key
                         onchange
 
