@@ -12,6 +12,10 @@ which modules are to be in the main distribution, etc.
 If you have created your own modules, or changed existing modules, Hyperbuild will allow you to create
 a binary release of your system, according to whatever changes you have applied to your original system.
 
+**Notice** - When you run Hyperbuild, it will copy your DLLs from your "bin" folder, as they are in its current version.
+This implies that you'd probably want to make sure you are running the system in its _"Release"_ build, if you are
+creating your own build, from a source version of Phosphorus Five.
+
 ## Usage
 
 Hyperbuild has a lot of settings, which allows you to build more or less P5 exactly as you see fit. Below you can find
