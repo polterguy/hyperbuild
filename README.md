@@ -60,3 +60,41 @@ GnuPG installation - These additional zip files will be cryptographically signed
 named _"some-module.zip.pgp"_, allowing you to download these files after the build process has finished, and distribute them through your 
 own Bazar.
 
+### How the Bazar work
+
+The Bazar is Phosphorus Five's _"AppStore"_, and allows you to securely distribute your own additional modules, either for a fee, or gratis -
+And such allow consumers of your _"web operating system"_, to install additional modules, as they see fit.
+
+The Bazar expects all of these additional modules to be cryptographically signed with your own private PGP key. This prevents an
+adversary to inject malicious code into your user's systems, since by default the system will only trust modules, that have been cryptographically
+signed, with a private PGP key, that must exist in the "/modules/bazar/configuration/trusted-app-distributors.hl"_ file.
+
+When you run Hyperbuild, it will create a new _"trusted-app-distributors.hl"_ file for you automatically, if you supply a private PGP key, and its
+password to cryptographically sign any additional modules. This allows anything that has been cryptographically signed with the specified PGP key,
+to be automatically installed, as an additional module, into your user's systems.
+
+#### The Bazar(s) declaration file
+
+This file defines where your Bazar(s) exists on the internet, and contains references to a Hyperlambda file on the internet, that the system
+will automatically check (periodically), to see if there have been added new additional modules, that the user can download and install, on his
+own system.
+
+As you create your build, you will be asked to provide such a Bazar declaration file, which will be injected dynamically into your 
+own _"/modules/bazar/configuration/bazars.hl"_ file, and such becomes a link to your actual Bazar implementations. Basically, this is a link, 
+to one or more Hyperlambda file(s), on the internet, through which you want to inform users of your system, about new modules, and/or upgrades 
+to existing modules.
+
+Normally, this file should simply look like the following.
+
+```
+bazar:"https://my-server.com/my-bazar.hl"
+```
+
+As you update this file, your users will automatically and dynamically, have the option to install new apps into their systems. The default Bazar
+declaration file, contains additional HTTP headers, necessary to retrieve the default Phosphorus Five Bazar. You can add any amount of additional
+static HTTP headers, as children to your **[bazar]** arguments, inside of your Bazar declaration file. However, by default, an *"If-Modified-Since"* 
+header will be intelligently added, to avoid downloading Bazar content files, that have no new content. This is a feature to avoid downloading huge 
+Bazar content files, that have not been changed, and hence will significantly speed up the traversal of your Bazar(s)' content files.
+
+#### The Bazar content file(s)
+
