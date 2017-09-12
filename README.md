@@ -98,3 +98,55 @@ Bazar content files, that have not been changed, and hence will significantly sp
 
 #### The Bazar content file(s)
 
+This file contains all your additional modules, that the user can install, either for a fee or gratis into his system. It has a structure, where
+each app is declared as an **[app]** node, in addition to a friendly _"name"_ at the top.
+
+This is the file that needs to be updated every time you add a new module, and or update an existing module, to allow your users to update their 
+systems. When you have created your build, an example Bazar content file will be shown to you, which you can modify as you see fit. This file must
+have a special structure, where each **[app]** declaration must resemble the following.
+
+```
+/*
+ * Some App
+ */
+app:some-unique-app-id
+
+  // Name of your app.
+  name:Some App
+
+  // Short description of your app.
+  description:Some app does something really cool, and here is a short description of it.
+
+  // Conditional Active Event, which if found, assumes the app is already installed on user's system.
+  condition:some-app.condition-to-check-if-app-is-installed
+
+  // Link to PGP signed zip file for downloading and installing app.
+  url:"https://github.com/polterguy/sephia-five/releases/download/v4.9/sephia-five.zip.pgp"
+
+  // A more detailed description of your app. Notice, use Markdown here if you wish!
+  author-readme:@"Sephia Five is a cryptographically secure webmail and email client, with PGP support, which is built with your privacy in mind. Among other things, it does not display HTML emails, to avoid marketing gibberish and _'crapware'_, interrupting your privacy. It has the following features.
+
+* PGP cryptography
+* Virus and malware protection
+* Phishing protection
+* Extremly easy to use
+
+You can see a video demonstrating some of its features [here](https://www.youtube.com/watch?v=0F4SVEoD1HE). Sephia Five is Free Software, Open Source, and Gratis for individuals.
+
+Sephia Five is developed and maintained by Thomas Hansen - thomas@gaiasoul.com, the PGP fingerprint for its developer is '5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD'"
+
+  // Price of your app, and/or license.
+  price:Free/GPL
+
+  // The name for your folder.
+  // This will be the folder name inside of "/modules/" in your users' systems.
+  // USE SOMETHING UNIQUE HERE!!
+  local-url:sephia-five
+
+  // And image that will be shown for your app, before installation.
+  image:"https://phosphorusfive.files.wordpress.com/2017/08/vault-icon-2.png"
+
+  // The PGP key's fingerprint, for the PGP key that was used to sign this particular app.
+  developer-key:5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD
+```
+
