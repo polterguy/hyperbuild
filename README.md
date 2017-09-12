@@ -90,7 +90,7 @@ Normally, this file should simply look like the following.
 bazar:"https://my-server.com/my-bazar.hl"
 ```
 
-As you update this file, your users will automatically and dynamically, have the option to install new apps into their systems. The default Bazar
+As you update your _"Bazar content files"_, your users will automatically and dynamically, have the option to install new apps into their systems. The default Bazar
 declaration file, contains additional HTTP headers, necessary to retrieve the default Phosphorus Five Bazar. You can add any amount of additional
 static HTTP headers, as children to your **[bazar]** arguments, inside of your Bazar declaration file. However, by default, an *"If-Modified-Since"* 
 header will be intelligently added, to avoid downloading Bazar content files, that have no new content. This is a feature to avoid downloading huge 
