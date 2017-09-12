@@ -159,7 +159,7 @@ app:some-app-unique-id
   // The name for your folder.
   // This will be the folder name inside of "/modules/" in your users' systems.
   // USE SOMETHING UNIQUE HERE!!
-  local-url:sephia-five
+  local-url:some-app
 
   // And image that will be shown for your app, before installation.
   image:"https://my-server.com/some-image.png"
