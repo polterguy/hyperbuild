@@ -12,7 +12,7 @@ which modules are to be in the main distribution, etc.
 If you have created your own modules, or changed existing modules, Hyperbuild will allow you to create
 a binary release of your system, according to whatever changes you have applied to your original system.
 
-**Notice** - When you run Hyperbuild, it will copy your DLLs from your "bin" folder, as they are in its current version.
+**Notice** - When you run Hyperbuild, it will copy your DLLs from your _"bin"_ folder, as they are in its current version.
 This implies that you'd probably want to make sure you are running the system in its _"Release"_ build, if you are
 creating your own build, from a source version of Phosphorus Five.
 
@@ -89,6 +89,10 @@ Normally, this file should simply look like the following.
 ```
 bazar:"https://my-server.com/my-bazar.hl"
 ```
+
+If the above URL is pointing to your Bazar content file, your Hyperbuild settings should resemble something like the following.
+
+![alt screenshot](media/screenshot-3.png)
 
 As you update your _"Bazar content files"_, your users will automatically and dynamically, have the option to install new apps into their systems. The default Bazar
 declaration file, contains additional HTTP headers, necessary to retrieve the default Phosphorus Five Bazar. You can add any amount of additional
