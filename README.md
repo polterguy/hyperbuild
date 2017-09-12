@@ -67,7 +67,7 @@ And such allow consumers of your _"web operating system"_, to install additional
 
 The Bazar expects all of these additional modules to be cryptographically signed with your own private PGP key. This prevents an
 adversary to inject malicious code into your user's systems, since by default the system will only trust modules, that have been cryptographically
-signed, with a private PGP key, that must exist in the "/modules/bazar/configuration/trusted-app-distributors.hl"_ file.
+signed, with a private PGP key, that must exist in the _"/modules/bazar/configuration/trusted-app-distributors.hl"_ file.
 
 When you run Hyperbuild, it will create a new _"trusted-app-distributors.hl"_ file for you automatically, if you supply a private PGP key, and its
 password to cryptographically sign any additional modules. This allows anything that has been cryptographically signed with the specified PGP key,
