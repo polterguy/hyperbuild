@@ -134,6 +134,8 @@ name:My cool repository
 
 /*
  * Some App
+ *
+ * Notice, the ID for your app, should be unique, but not contain any versioning logic.
  */
 app:some-app-unique-id
 
@@ -159,8 +161,9 @@ app:some-app-unique-id
   price:Free/GPL
 
   /*
-   * The name for your folder.
+   * The name for your app's main modules folder.
    * This will be the folder name inside of "/modules/" in your users' systems.
+   *
    * USE SOMETHING UNIQUE HERE!!
    */
   local-url:some-app
