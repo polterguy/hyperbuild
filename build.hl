@@ -103,23 +103,83 @@ copy-folder:/desktop/
 
 /*
  * Copying our "/modules/" folder.
+ *
+ * Notice, this has to be done such that we don't copy any "/.git/" folders, or
+ * any "/.gitignore" files, since these are protected from the web server user account,
+ * at least on Windows machines.
+ *
+ * Hence, first we statically create our "/modules/" folder inside of our build output folder.
  */
-copy-folder:/modules/
-  dest:~/temp/hyperbuild-output/p5/modules/
+create-folder:~/temp/hyperbuild-output/p5/modules/
 
 
 
 
 
 /*
- * Deleting any ".git" folders, and ".gitignore" files within modules.
+ * Then we we list all folders inside of our root "/modules/" folder, and iterate through
+ * all of these folders, and copies their content into our output folder.
+ *
+ * If we don't exclude "/.git/" folders and "/.gitignore" files this way, it will be
+ * impossible to delete these folders/files later, since they're "protected" from the
+ * web server's user account on Windows.
+ *
+ * Fuck Microsoft, this used to be ONE FREAKIN' LINE OF CODE before I started checking if
+ * it worked on Windows ...!!
  */
-list-folders:~/temp/hyperbuild-output/p5/modules/
-list-files:x:/@list-folders/*?name
-  filter:.gitignore
-delete-file:x:/@list-files/*?name
-list-folders:x:/@list-folders/*?name
-delete-folder:x:@"/@list-folders/*/""~/.git/"""
+list-folders:/modules/
+for-each:x:/@list-folders/*?name
+
+  /*
+   * Figuring out currently iterated folder's name, and creating it, inside of our
+   * output folder.
+   */
+  split:x:/@_dp?value
+    =:/
+  create-folder:~/temp/hyperbuild-output/p5/modules/{0}/
+    :x:/@split/0/-?name
+
+  /*
+   * Listing all folders inside of our currently iterated folder, making sure we
+   * exclude any "/.git/" folders.
+   */
+  list-folders:x:/@_dp?value
+  set:x:@"/@list-folders/*/""~/.git/"""
+
+  /*
+   * Iterating through all sub-folders, inside of currently iterated modules folder.
+   * Now with any "/.git/" folders removed.
+   */
+  for-each:x:/@list-folders/*?name
+
+    /*
+     * Figuring out folder's name, before we copy its content to output folder.
+     */
+    split:x:/@_dp?value
+      =:/
+    copy-folder:x:/@_dp?value
+      dest:~/temp/hyperbuild-output/p5/modules/{0}/{1}/
+        :x:/@split/@split/0/-?name
+        :x:/@split/0/-?name
+
+  /*
+   * Then listing all files within currently iterated modules folder, and copying
+   * them to our currently iterated modules folder. Making sure we remove any "/.gitignore"
+   * files in the process.
+   */
+  list-files:x:/@_dp?value
+  set:x:@"/@list-files/*/""=~/.gitignore"""
+
+  /*
+   * Iterating through each file from above result, and copying it to module's output folder.
+   */
+  for-each:x:/@list-files/*?name
+    split:x:/@_dp?value
+      =:/
+    copy-file:x:/@_dp?value
+      dest:~/temp/hyperbuild-output/p5/modules/{0}/{1}
+        :x:/@split/0/-2?name
+        :x:/@split/0/-?name
 
 
 
@@ -194,19 +254,35 @@ for-each:x:/@list-folders/*?name
 
 /*
  * Creating our default "/users/" folder structure.
+ *
+ * By default, there is only one folder inside of here, which is the root account's
+ * folder, which is the only account that will be by default created on the system as it
+ * is being setup on some server.
+ *
+ * Notice, since our [zip] event won't handle empty folders, every folder
+ * needs at least one file, otherwise it won't be included in the zipping process.
+ *
+ * Hence, we create at least one README.md file, for each folder we create beneath.
  */
 create-folder:~/temp/hyperbuild-output/p5/users/
 create-folder:~/temp/hyperbuild-output/p5/users/root/
 create-folder:~/temp/hyperbuild-output/p5/users/root/temp/
 save-file:~/temp/hyperbuild-output/p5/users/root/temp/README.md
-  src:"Temporary folder"
+  src:@"## Temporary folder
+
+This folder contains your temporary files, and will be automatically emptied every time you logout from the system."
+
 create-folder:~/temp/hyperbuild-output/p5/users/root/documents/
 create-folder:~/temp/hyperbuild-output/p5/users/root/documents/private/
 save-file:~/temp/hyperbuild-output/p5/users/root/documents/private/README.md
-  src:"Private files"
+  src:@"## Private files
+
+This folder contains your private files, which are only accessible for you, and no other users in the system."
 create-folder:~/temp/hyperbuild-output/p5/users/root/documents/public/
 save-file:~/temp/hyperbuild-output/p5/users/root/documents/public/README.md
-  src:"Public files"
+  src:@"## Public files
+
+This folder contains your public files, which anyone with a direct link can easily access."
 
 
 
