@@ -149,16 +149,20 @@ app:some-app-unique-id
   // Link to PGP signed zip file for downloading and installing app.
   url:"https://my-server.com/modules/some-app.zip.pgp"
 
-  // A more detailed description of your app.
-  // Notice, use Markdown here if you wish.
+  /*
+   * A more detailed description of your app.
+   * Notice, use Markdown here if you wish.
+   */
   author-readme:@"Longer description goes here!! Notice, use **Markdown** if you wish!"
 
   // Price of your app, and/or license.
   price:Free/GPL
 
-  // The name for your folder.
-  // This will be the folder name inside of "/modules/" in your users' systems.
-  // USE SOMETHING UNIQUE HERE!!
+  /*
+   * The name for your folder.
+   * This will be the folder name inside of "/modules/" in your users' systems.
+   * USE SOMETHING UNIQUE HERE!!
+   */
   local-url:some-app
 
   // And image that will be shown for your app, before installation.
