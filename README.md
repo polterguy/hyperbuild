@@ -62,6 +62,9 @@ GnuPG installation - These additional zip files will be cryptographically signed
 named _"some-module.zip.pgp"_, allowing you to download these files after the build process has finished, and distribute them through your 
 own Bazar.
 
+**Notice** - If you choose to make the _"Bazar"_ a part of your main distribution, but you do not cryptographically sign your own modules, the
+default P5 Bazar will be used in your main distribution. This is the main P5 Bazar, where all the apps are signed with my PGP key.
+
 ### How the Bazar work
 
 The Bazar is Phosphorus Five's _"AppStore"_, and allows you to securely distribute your own additional modules, either for a fee, or gratis -
