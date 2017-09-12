@@ -1,11 +1,12 @@
 
 # Hyperbuild, Phosphorus Five's build system
 
-This is the build system for [Phosphorus Five](https://github.com/polterguy/phosphorusfive), which allows you to 
+Hyperbuild is the build system for [Phosphorus Five](https://github.com/polterguy/phosphorusfive), which allows you to 
 reproduce your Phosphorus Five installation, any ways you see fit, and create a binary release of the system. 
 This is done by taking the existing system's state, whatever that is, minus any data, users, passwords, settings, etc -
-And create a binary release of the system, allowing you to cryptographically sign modules, choose
-which modules are to be in the main distribution, etc.
+And create a binary release of the system, allowing you to cryptographically sign addon modules, choose
+which modules are to be in the main distribution, etc. Hyperbuild has a lot of settings and options, but for the most parts,
+95% of these are irrelevant, unless you want to host your own Bazar.
 
 ![alt screenshot](media/screenshot-2.png)
 
