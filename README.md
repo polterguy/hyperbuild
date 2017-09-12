@@ -135,7 +135,8 @@ name:My cool repository
 /*
  * Some App
  *
- * Notice, the ID for your app, should be unique, but not contain any versioning logic.
+ * Notice, the ID for your app, should be unique for your app, 
+ * but not contain any versioning logic.
  */
 app:some-app-unique-id
 
