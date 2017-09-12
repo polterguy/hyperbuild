@@ -158,11 +158,11 @@ for-each:x:/@list-folders/*?name
  */
 insert-before:x:/../*/create-widget/**/micro.widgets.wizard-form/*/hr/[0,1]
   src
-    p
-      innerValue:Choose if you wish to include your 'web.config' file into the core build. Notice, this will include any changes you've done, including your MySQL passwords, etc.
+    br
     checkbox
       .data-field:include-web-config
       info:Include web.config file
+      checked
 
 
 
@@ -202,18 +202,21 @@ create-widget:hyperbuild-main-container
         div
           class:col-100
           widgets
-            div
+            div:build-configuration
               class:shaded rounded air-inner
+              style:"position:relative;"
               widgets
-
+                a
+                  href:"https://github.com/polterguy/hyperbuild"
+                  innerValue:@"<span class=""icon-question""></span>"
+                  target:_blank
+                  style:"position:absolute;top:.5rem;right:1rem;font-size:1.5rem;"
                 h3
-                  innerValue:Hyperbuild
+                  innerValue:Main distribution
                 micro.widgets.wizard-form:modules
-                  p
-                    innerValue:@"Choose which modules you wish to include in your main distribution."
                   hr
-                  p
-                    innerValue:Choose if you'd like to build additional modules. Notice, if you'd like to cryptographically sign your modules, you must supply a password for your PGP key.
+                  h3
+                    innerValue:Additional modules
                   checkbox:sign-modules
                     .data-field:additional-modules
                     info:Build additional modules
@@ -325,7 +328,7 @@ create-widget:hyperbuild-main-container
                   class:right
                   widgets
                     button:start-build
-                      innerValue:Start build
+                      innerValue:Build
                       style:"margin-bottom:0;"
                       onclick
 

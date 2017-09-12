@@ -261,6 +261,8 @@ if
   fetch:x:/0/0?value
     folder-exists:~/temp/hyperbuild-output/p5/modules/bazar/configuration/
   and:x:/@.signal/--/bazar?value
+  and:x:/@.signal/--/bazar?value
+    !=:
 
   /*
    * An explicit bazar declaration was supplied, and caller included Bazar in his
@@ -280,7 +282,7 @@ if
 
     /*
      * User supplied a [password] argument, hence we exchange the content of our
-     * "trusted-app-distributors.hl" file with his [fingerprint], and his key-id.
+     * "trusted-app-distributors.hl" file with his [fingerprint], and his [key-id].
      */
     _trusted
     add:x:/@_trusted
@@ -321,15 +323,15 @@ zip:~/temp/hyperbuild-output/binaries.zip
 
 /*
  * When the build is done, we create all links to download all resulting files.
+ *
+ * But first, we remove all existing content in output widget.
  */
-create-widget
-  parent:output
-  element:hr
-  style:"margin-top:1rem;"
+clear-widget:build-configuration
+create-container-widget:output
+  parent:build-configuration
 create-widget
   parent:output
   element:h3
-  style:"margin-top:1rem;"
   innerValue:Result
 list-files:~/temp/hyperbuild-output/
   filter:.zip|.pgp
@@ -377,3 +379,38 @@ create-widget
   style:"clear:both;margin-bottom:0;"
   innerValue:SHA1 checksum of binaries.zip; '{0}'
     :x:/@p5.crypto.hash.create-sha1-file?value
+
+
+
+
+
+/*
+ * Then displaying an example Bazar content file, but only if user is actually
+ * building a Bazar (meaning; Caller has provided a PGP key [password]).
+ */
+if:x:/../*/password?value
+  and:x:/../*/password?value
+    !=:
+
+  /*
+   * User provided a [password] argument.
+   */
+  create-widget
+    parent:output
+    widgets
+      br
+      label
+        innerValue:Example bazar content file
+      literal
+        element:textarea
+        rows:20
+        class:fill
+        oninit
+
+          /*
+           * Loading the example Bazar that is the default bazar in P5.
+           */
+          load-file:/modules/bazar/bazars/apps.hl
+            convert:false
+          set-widget-property:x:/../*/_event?value
+            innerValue:x:/@load-file/*?value
