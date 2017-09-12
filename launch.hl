@@ -113,6 +113,41 @@ for-each:x:/@list-folders/*?name
       src:checked
 
   else-if:x:/@split/0/-?name
+    =:bazar
+
+    /*
+     * Adding onchange event, that displays/hides all the "advanced settings".
+     */
+    add:x:/..for-each/*/insert-before/*/*
+      src
+        onchange
+
+          /*
+           * Checking if user checked or removed checked for Bazar, and acting accordingly.
+           */
+          get-widget-property:x:/../*/_event?value
+            checked
+          if:x:/@get-widget-property/*/*
+
+            /*
+             * User selected Bazar, making sure we display all "advanced settings".
+             */
+            p5.web.widgets.find
+              .advanced
+            set-widget-property:x:/@p5.web.widgets.find/*/*?value
+              visible:true
+
+          else
+
+            /*
+             * User de-selected Bazar, making sure we hide all "advanced settings".
+             */
+            p5.web.widgets.find
+              .advanced
+            set-widget-property:x:/@p5.web.widgets.find/*/*?value
+              visible:false
+
+  else-if:x:/@split/0/-?name
     !=:bazar
 
     /*
@@ -128,7 +163,7 @@ for-each:x:/@list-folders/*?name
    * list.
    */
   eval-x:x:/+/*/*/*
-  insert-before:x:/../*/create-widget/**/micro.widgets.wizard-form/*/hr/[0,1]
+  insert-before:x:/../*/create-widget/**/micro.widgets.wizard-form/*/collection
     src
       checkbox
         .data-field:core-modules-{0}
@@ -139,7 +174,7 @@ for-each:x:/@list-folders/*?name
    * Adding to "sign module list".
    */
   eval-x:x:/+/*/*/*
-  add:x:/../*/create-widget/**/micro.widgets.wizard-form
+  add:x:/../*/create-widget/**/micro.widgets.wizard-form/*/collection/*/widgets
     src
       checkbox
         .data-field:additional-modules-{0}
@@ -213,230 +248,236 @@ create-widget:hyperbuild-main-container
                 h3
                   innerValue:Main distribution
                 micro.widgets.wizard-form:modules
-                  hr
-                  h3
-                    innerValue:Additional modules
-                  checkbox:sign-modules
-                    .data-field:additional-modules
-                    info:Build additional modules
-                    title:Check this button if you wish to sign other modules cryptographically with your own PGP key
-                    onchange
-
-                      /*
-                       * Checking if button was turned on or off, and enabling PGP key selector accordingly.
-                       */
-                      get-widget-property:x:/../*/_event?value
-                        checked
-                      if:x:/@get-widget-property/*/*
-
-                        /*
-                         * Enabling signing of modules.
-                         */
-                        delete-widget-property:pgp-key
-                          disabled
-                        delete-widget-property:pgp-pwd
-                          disabled
-
-                        /*
-                         * Finding all "sign module checkboxes", and enabling them.
-                         */
-                        p5.web.widgets.find:modules
-                          .sign
-                        delete-widget-property:x:/@p5.web.widgets.find/*/*?value
-                          disabled
-
-                        /*
-                         * Finding "bazar declaration" textarea, and enabling it.
-                         */
-                        p5.web.widgets.find:modules
-                          .data-field:bazar
-                        delete-widget-property:x:/@p5.web.widgets.find/*/*?value
-                          disabled
-
-                      else
-
-                        /*
-                         * Disabling signing of modules.
-                         */
-                        set-widget-property:pgp-key
-                          disabled
-                        set-widget-property:pgp-pwd
-                          disabled
-
-                        /*
-                         * Finding all "sign module checkboxes", and disabling them.
-                         */
-                        p5.web.widgets.find:modules
-                          .sign
-                        set-widget-property:x:/@p5.web.widgets.find/*/*?value
-                          disabled
-
-                        /*
-                         * Finding "bazar declaration" textarea, and disabling it.
-                         */
-                        p5.web.widgets.find:modules
-                          .data-field:bazar
-                        set-widget-property:x:/@p5.web.widgets.find/*/*?value
-                          disabled
-
-                  select:pgp-key
-                    .data-field:fingerprint
-                    info:PGP key
-                    title:Choose your PGP key's fingerprint here
-                    disabled
-                    oninit
-
-                      /*
-                       * Creating one "option" widget for each private key in GnuPG database.
-                       */
-                      p5.crypto.list-private-keys
-                      for-each:x:/-/*
-                        create-widget
-                          parent:x:/../*/_event?value
-                          element:option
-                          innerValue:x:/@_dp/#?name
-
-                  text:pgp-pwd
-                    .data-field:password
-                    info:Password
-                    type:password
-                    title:Supply your PGP key's password here, or leave it empty if you don't want to cryptographically sign your modules.
-                    autocomplete:new-password
-                    onkeydown:@"if (event.keyCode == 13) {p5.$('start-build').raise('onclick');return false;}"
-                    disabled
-                  label
-                    innerValue:Supply an optional declaration for your Bazar(s).
-                    for:bazar-declaration
-                  textarea:bazar-declaration
-                    .data-field:bazar
-                    info:Bazar declaration ...
-                    rows:7
-                    disabled
-                    oninit
-
-                      /*
-                       * Loading the default Bazar declaration file, and changing the content
-                       * of textarea to lambda of file.
-                       */
-                      load-file:/modules/bazar/configuration/bazars.hl
-                      lambda2hyper:x:/@load-file/*/*
-                      set-widget-property:x:/../*/_event?value
-                        innerValue:x:/@lambda2hyper?value
-
-                div
-                  class:right
-                  widgets
-                    button:start-build
-                      innerValue:Build
-                      style:"margin-bottom:0;"
-                      onclick
-
-                        /*
-                         * Making sure we show obscurer, for then to invoke "real" implementation.
-                         */
-                        set-widget-property:build-obscurer
-                          style:"display:block;"
-                        p5.web.send-javascript:@"p5.$('start-build').raise('.onclick');"
-
-                      .onclick
-
-                        /*
-                         * Serializing above wizard-form, to figure out which modules user
-                         * wants to include in his main build.
-                         */
-                        micro.widgets.wizard-form.value:modules
-
-                        /*
-                         * Wrapping invocation in a try/catch block, in case an exception occurs.
-                         */
-                        try
+                  collection
+                    .advanced
+                    visible:false
+                    widgets
+                      hr
+                      h3
+                        innerValue:Additional modules
+                      checkbox:sign-modules
+                        .data-field:additional-modules
+                        info:Build additional modules
+                        title:Check this button if you wish to sign other modules cryptographically with your own PGP key
+                        onchange
 
                           /*
-                           * Adding all "core modules" user wants to add to his main distribution.
+                           * Checking if button was turned on or off, and enabling PGP key selector accordingly.
                            */
-                          for-each:x:@"/@micro.widgets.wizard-form.value/*/""=:bool:true""(/~core-modules-)?name"
-                            split:x:/@_dp?value
-                              =:core-modules-
-                            add:x:/..try/*/micro.evaluate.file/*/core
-                              src:x:/@split/0?name
-
-                          /*
-                           * Checking if user wants to include his web.config file.
-                           */
-                          if:x:/@micro.widgets.wizard-form.value/*/include-web-config?value
+                          get-widget-property:x:/../*/_event?value
+                            checked
+                          if:x:/@get-widget-property/*/*
 
                             /*
-                             * User wants to include his web.config file.
+                             * Enabling signing of modules.
                              */
-                            add:x:/..try/*/micro.evaluate.file
-                              src
-                                include-web-config:bool:true
-
-                          /*
-                           * Checking if user wants to build additional modules.
-                           */
-                          if:x:/@micro.widgets.wizard-form.value/*/additional-modules?value
+                            delete-widget-property:pgp-key
+                              disabled
+                            delete-widget-property:pgp-pwd
+                              disabled
 
                             /*
-                             * User wants to build additional modules.
-                             *
-                             * Adding an [additional-modules] argument, and adding each
-                             * module user wants to build as an addition module into this
-                             * argument.
+                             * Finding all "sign module checkboxes", and enabling them.
                              */
-                            add:x:/..try/*/micro.evaluate.file
-                              src:modules
-                            for-each:x:@"/@micro.widgets.wizard-form.value/*/""=:bool:true""(/~additional-modules-)?name"
+                            p5.web.widgets.find:modules
+                              .sign
+                            delete-widget-property:x:/@p5.web.widgets.find/*/*?value
+                              disabled
+
+                            /*
+                             * Finding "bazar declaration" textarea, and enabling it.
+                             */
+                            p5.web.widgets.find:modules
+                              .data-field:bazar
+                            delete-widget-property:x:/@p5.web.widgets.find/*/*?value
+                              disabled
+
+                          else
+
+                            /*
+                             * Disabling signing of modules.
+                             */
+                            set-widget-property:pgp-key
+                              disabled
+                            set-widget-property:pgp-pwd
+                              disabled
+
+                            /*
+                             * Finding all "sign module checkboxes", and disabling them.
+                             */
+                            p5.web.widgets.find:modules
+                              .sign
+                            set-widget-property:x:/@p5.web.widgets.find/*/*?value
+                              disabled
+
+                            /*
+                             * Finding "bazar declaration" textarea, and disabling it.
+                             */
+                            p5.web.widgets.find:modules
+                              .data-field:bazar
+                            set-widget-property:x:/@p5.web.widgets.find/*/*?value
+                              disabled
+
+                      select:pgp-key
+                        .advanced
+                        .data-field:fingerprint
+                        info:PGP key
+                        title:Choose your PGP key's fingerprint here
+                        disabled
+                        oninit
+
+                          /*
+                           * Creating one "option" widget for each private key in GnuPG database.
+                           */
+                          clear-widget:x:/../*/_event?value
+                          p5.crypto.list-private-keys
+                          for-each:x:/-/*
+                            create-widget
+                              parent:x:/../*/_event?value
+                              element:option
+                              innerValue:x:/@_dp/#?name
+
+                      text:pgp-pwd
+                        .advanced
+                        .data-field:password
+                        info:Password
+                        type:password
+                        title:Supply your PGP key's password here, or leave it empty if you don't want to cryptographically sign your modules.
+                        autocomplete:new-password
+                        onkeydown:@"if (event.keyCode == 13) {p5.$('start-build').raise('onclick');return false;}"
+                        disabled
+                      label
+                        .advanced
+                        innerValue:Supply an optional declaration for your Bazar(s).
+                        for:bazar-declaration
+                      textarea:bazar-declaration
+                        .advanced
+                        .data-field:bazar
+                        info:Bazar declaration ...
+                        rows:7
+                        disabled
+                        oninit
+
+                          /*
+                           * Loading the default Bazar declaration file, and changing the content
+                           * of textarea to lambda of file.
+                           */
+                          load-file:/modules/bazar/configuration/bazars.hl
+                          lambda2hyper:x:/@load-file/*/*
+                          set-widget-property:x:/../*/_event?value
+                            innerValue:x:/@lambda2hyper?value
+
+                  div
+                    class:right
+                    widgets
+                      button:start-build
+                        innerValue:Build
+                        style:"margin-bottom:0;"
+                        onclick
+
+                          /*
+                           * Making sure we show obscurer, for then to invoke "real" implementation.
+                           */
+                          set-widget-property:build-obscurer
+                            style:"display:block;"
+                          p5.web.send-javascript:@"p5.$('start-build').raise('.onclick');"
+
+                        .onclick
+
+                          /*
+                           * Serializing above wizard-form, to figure out which modules user
+                           * wants to include in his main build.
+                           */
+                          micro.widgets.wizard-form.value:modules
+
+                          /*
+                           * Wrapping invocation in a try/catch block, in case an exception occurs.
+                           */
+                          try
+
+                            /*
+                             * Adding all "core modules" user wants to add to his main distribution.
+                             */
+                            for-each:x:@"/@micro.widgets.wizard-form.value/*/""=:bool:true""(/~core-modules-)?name"
                               split:x:/@_dp?value
-                                =:additional-modules-
-                              add:x:/..try/*/micro.evaluate.file/*/modules
+                                =:core-modules-
+                              add:x:/..try/*/micro.evaluate.file/*/core
                                 src:x:/@split/0?name
 
                             /*
-                             * Checking if caller supplied a PGP password, at which
-                             * point we add PGP fingerprint and password as an argument.
+                             * Checking if user wants to include his web.config file.
                              */
-                            if:x:/@micro.widgets.wizard-form.value/*/password?value
-                              and:x:/@micro.widgets.wizard-form.value/*/password?value
-                                !=:
+                            if:x:/@micro.widgets.wizard-form.value/*/include-web-config?value
 
                               /*
-                               * User supplied a password, and wants to cryptographically sign some modules.
+                               * User wants to include his web.config file.
                                */
                               add:x:/..try/*/micro.evaluate.file
-                                src:x:/@micro.widgets.wizard-form.value/*(/fingerprint|/password)
+                                src
+                                  include-web-config:bool:true
 
                             /*
-                             * Passing in the "Bazar declaration" to build process.
+                             * Checking if user wants to build additional modules.
                              */
-                            eval-x:x:/+/*/*
-                            add:x:/..try/*/micro.evaluate.file
-                              src
-                                bazar:x:/@micro.widgets.wizard-form.value/*/bazar?value
+                            if:x:/@micro.widgets.wizard-form.value/*/additional-modules?value
 
-                          /*
-                           * Evaluating file responsible for creating our build.
-                           */
-                          micro.evaluate.file:@HYPERBUILD/build.hl
-                            core
+                              /*
+                               * User wants to build additional modules.
+                               *
+                               * Adding an [additional-modules] argument, and adding each
+                               * module user wants to build as an addition module into this
+                               * argument.
+                               */
+                              add:x:/..try/*/micro.evaluate.file
+                                src:modules
+                              for-each:x:@"/@micro.widgets.wizard-form.value/*/""=:bool:true""(/~additional-modules-)?name"
+                                split:x:/@_dp?value
+                                  =:additional-modules-
+                                add:x:/..try/*/micro.evaluate.file/*/modules
+                                  src:x:/@split/0?name
 
-                          /*
-                           * Hiding obscurer again, and providing feedback to user.
-                           */
-                          set-widget-property:build-obscurer
-                            style:"display:none;"
-                          micro.windows.info:Build was successfully completed
-                            class:micro-windows-info success
+                              /*
+                               * Checking if caller supplied a PGP password, at which
+                               * point we add PGP fingerprint and password as an argument.
+                               */
+                              if:x:/@micro.widgets.wizard-form.value/*/password?value
+                                and:x:/@micro.widgets.wizard-form.value/*/password?value
+                                  !=:
 
-                        catch
+                                /*
+                                 * User supplied a password, and wants to cryptographically sign some modules.
+                                 */
+                                add:x:/..try/*/micro.evaluate.file
+                                  src:x:/@micro.widgets.wizard-form.value/*(/fingerprint|/password)
 
-                          /*
-                           * Hiding obscurer again, and showing exception message to user.
-                           */
-                          set-widget-property:build-obscurer
-                            style:"display:none;"
-                          micro.windows.info:x:/..catch/*/message?value
-                            class:micro-windows-info warning
+                              /*
+                               * Passing in the "Bazar declaration" to build process.
+                               */
+                              eval-x:x:/+/*/*
+                              add:x:/..try/*/micro.evaluate.file
+                                src
+                                  bazar:x:/@micro.widgets.wizard-form.value/*/bazar?value
 
-                div:output
-                  widgets
+                            /*
+                             * Evaluating file responsible for creating our build.
+                             */
+                            micro.evaluate.file:@HYPERBUILD/build.hl
+                              core
+
+                            /*
+                             * Hiding obscurer again, and providing feedback to user.
+                             */
+                            set-widget-property:build-obscurer
+                              style:"display:none;"
+                            micro.windows.info:Build was successfully completed
+                              class:micro-windows-info success
+
+                          catch
+
+                            /*
+                             * Hiding obscurer again, and showing exception message to user.
+                             */
+                            set-widget-property:build-obscurer
+                              style:"display:none;"
+                            micro.windows.info:x:/..catch/*/message?value
+                              class:micro-windows-info warning

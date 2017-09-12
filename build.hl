@@ -12,15 +12,6 @@
 
 
 /*
- * Clearing result widget.
- */
-clear-widget:output
-
-
-
-
-
-/*
  * Deleting any previous "output folders", if they exist.
  */
 if
