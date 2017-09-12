@@ -132,7 +132,8 @@ for-each:x:/@list-folders/*?name
   insert-before:x:/../*/create-widget/**/micro.widgets.wizard-form/*/hr/[0,1]
     src
       checkbox
-        .data-field:x:/@split/0/-?name
+        .data-field:core-modules-{0}
+          :x:/@split/0/-?name
         info:x:/@split/0/-?name
 
   /*
@@ -142,11 +143,26 @@ for-each:x:/@list-folders/*?name
   add:x:/../*/create-widget/**/micro.widgets.wizard-form
     src
       checkbox
-        .data-field:pgp-signed-{0}
+        .data-field:additional-modules-{0}
           :x:/@split/0/-?name
         info:x:/@split/0/-?name
         disabled
         .sign
+
+
+
+
+
+/*
+ * Adding our "include web.config" checkbox.
+ */
+insert-before:x:/../*/create-widget/**/micro.widgets.wizard-form/*/hr/[0,1]
+  src
+    p
+      innerValue:Choose if you wish to include your 'web.config' file into the core build. Notice, this will include any changes you've done, including your MySQL passwords, etc.
+    checkbox
+      .data-field:include-web-config
+      info:Include web.config file
 
 
 
@@ -197,10 +213,10 @@ create-widget:hyperbuild-main-container
                     innerValue:@"Choose which modules you wish to include in your main distribution."
                   hr
                   p
-                    innerValue:@"Choose if you'd like to cryptographically sign any other modules, for distributing in your own Bazar."
+                    innerValue:Choose if you'd like to build additional modules. Notice, if you'd like to cryptographically sign your modules, you must supply a password for your PGP key.
                   checkbox:sign-modules
-                    .data-field:signed-modules
-                    info:Sign modules
+                    .data-field:additional-modules
+                    info:Build additional modules
                     title:Check this button if you wish to sign other modules cryptographically with your own PGP key
                     onchange
 
@@ -226,12 +242,6 @@ create-widget:hyperbuild-main-container
                           .sign
                         delete-widget-property:x:/@p5.web.widgets.find/*/*?value
                           disabled
-
-                        /*
-                         * Providing feedback to user.
-                         */
-                        micro.windows.info:Please choose a PGP key, and supply its password
-                          class:micro-windows-info success
 
                       else
 
@@ -276,13 +286,6 @@ create-widget:hyperbuild-main-container
                     autocomplete:new-password
                     onkeydown:@"if (event.keyCode == 13) {p5.$('start-build').raise('onclick');return false;}"
                     disabled
-                    oninit
-
-                      /*
-                       * Setting initial focus to password textbox.
-                       */
-                      micro.page.set-focus:x:/../*/_event?value
-
                 div
                   class:right
                   widgets
@@ -312,44 +315,65 @@ create-widget:hyperbuild-main-container
                         try
 
                           /*
-                           * Evaluating file responsible for creating a build for us.
+                           * Adding all "core modules" user wants to add to his main distribution.
                            */
-                          add:x:/..try/*/micro.evaluate.file/*/modules
-                            src:x:@"/@micro.widgets.wizard-form.value/*/""=:bool:true""(!/~pgp-signed!/signed-modules)?name"
+                          for-each:x:@"/@micro.widgets.wizard-form.value/*/""=:bool:true""(/~core-modules-)?name"
+                            split:x:/@_dp?value
+                              =:core-modules-
+                            add:x:/..try/*/micro.evaluate.file/*/core
+                              src:x:/@split/0?name
 
                           /*
-                           * Sanity checking input.
+                           * Checking if user wants to include his web.config file.
                            */
-                          if:x:/@micro.widgets.wizard-form.value/*/signed-modules?value
-                            and:x:/@micro.widgets.wizard-form.value/*/password?value
-                              =:
-                            micro.windows.info:Please supply a password for your PGP key!
-                              class:micro-windows-info warning
-                            set-widget-property:build-obscurer
-                              style:"display:none;"
-                            return
-                          if:x:/@micro.widgets.wizard-form.value/*/password?value
-                            and:x:/@micro.widgets.wizard-form.value/*/password?value
-                              !=:
+                          if:x:/@micro.widgets.wizard-form.value/*/include-web-config?value
 
                             /*
-                             * User supplied a password, and wants to cryptographically sign some modules.
+                             * User wants to include his web.config file.
                              */
                             add:x:/..try/*/micro.evaluate.file
-                              src:x:/@micro.widgets.wizard-form.value/*(/fingerprint|/password)
+                              src
+                                include-web-config:bool:true
+
+                          /*
+                           * Checking if user wants to build additional modules.
+                           */
+                          if:x:/@micro.widgets.wizard-form.value/*/additional-modules?value
+
+                            /*
+                             * User wants to build additional modules.
+                             *
+                             * Adding an [additional-modules] argument, and adding each
+                             * module user wants to build as an addition module into this
+                             * argument.
+                             */
                             add:x:/..try/*/micro.evaluate.file
-                              src:signed
-                            for-each:x:@"/@micro.widgets.wizard-form.value/*/""=:bool:true""(/~pgp-signed!/signed-modules)?name"
+                              src:modules
+                            for-each:x:@"/@micro.widgets.wizard-form.value/*/""=:bool:true""(/~additional-modules-)?name"
                               split:x:/@_dp?value
-                                =:pgp-signed-
-                              add:x:/..try/*/micro.evaluate.file/*/signed
+                                =:additional-modules-
+                              add:x:/..try/*/micro.evaluate.file/*/modules
                                 src:x:/@split/0?name
+
+                            /*
+                             * Checking if caller supplied a PGP password, at which
+                             * point we add PGP fingerprint and password as an argument.
+                             */
+                            if:x:/@micro.widgets.wizard-form.value/*/password?value
+                              and:x:/@micro.widgets.wizard-form.value/*/password?value
+                                !=:
+
+                              /*
+                               * User supplied a password, and wants to cryptographically sign some modules.
+                               */
+                              add:x:/..try/*/micro.evaluate.file
+                                src:x:/@micro.widgets.wizard-form.value/*(/fingerprint|/password)
 
                           /*
                            * Evaluating file responsible for creating our build.
                            */
                           micro.evaluate.file:@HYPERBUILD/build.hl
-                            modules
+                            core
 
                           /*
                            * Hiding obscurer again, and providing feedback to user.

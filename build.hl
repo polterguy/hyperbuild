@@ -91,16 +91,6 @@ copy-file:/Global.asax
 
 
 /*
- * Copying README.md
- */
-copy-file:/README.md
-  dest:~/temp/hyperbuild-output/p5/
-
-
-
-
-
-/*
  * Copying startup.hl
  */
 copy-file:/startup.hl
@@ -146,21 +136,22 @@ delete-folder:x:@"/@list-folders/*/""~/.git/"""
 
 /*
  * Figuring out which modules caller wanted to include in the main release, and
- * removing everything else from the main "/modules/" folder in our build.
+ * if he wants to build additional modules as free standing zip files.
  */
 list-folders:~/temp/hyperbuild-output/p5/modules/
 for-each:x:/@list-folders/*?name
   split:x:/@_dp?value
     =:/
-  if:x:/@.signal/--/signed/*/{0}
+
+  /*
+   * Checking if currently iterated folder should have its own package file.
+   */
+  if:x:/@.signal/--/modules/*/{0}
     :x:/@split/0/-?name
 
     /*
-     * Caller wanted to include currently iterated folder as a module in
-     * his core release.
-     *
-     * Therefor, we wrap it into a zip file, and cryptographically sign our zip file,
-     * with the specified PGP key.
+     * Caller wants to create an additional module distribution file from the currently
+     * iterated folder.
      */
     zip:~/temp/hyperbuild-output/{0}.zip
       :x:/@split/0/-?name
@@ -168,11 +159,12 @@ for-each:x:/@list-folders/*?name
         :x:/@split/0/-?name
 
     /*
-     * Notice, if no password is supplied, we entirely drop the signing process of
-     * our zip files, and just leave them as they are.
+     * Checking if caller supplied PGP password, at which point we cryptographically
+     * sign the zip file.
      */
     if:x:/../*/password?value
-      !=:
+      and:x:/../*/password?value
+        !=:
 
       /*
        * Now we can cryptographically sign the module, with the specified PGP key,
@@ -189,7 +181,8 @@ for-each:x:/@list-folders/*?name
               password:x:/../*/password?value
 
       /*
-       * Deleting zip file.
+       * Deleting zip file, since caller specified he wanted to cryptographically
+       * sign his modules.
        */
       delete-file:~/temp/hyperbuild-output/{0}.zip
         :x:/@split/0/-?name
@@ -198,7 +191,7 @@ for-each:x:/@list-folders/*?name
    * Then we delete the module from the main release, unless user for some reasons
    * wanted to also distribute it in his main binaries.zip file.
    */
-  if:x:/@.signal/--/modules/*/{0}
+  if:x:/@.signal/--/core/*/{0}
     :x:/@split/0/-?name
     not
     delete-folder:~/temp/hyperbuild-output/p5/modules/{0}/
@@ -245,9 +238,7 @@ save-file:~/temp/hyperbuild-output/p5/common/documents/public/README.md
 
 
 /*
- * Finally we create our ZIP file, notice, we avoid copying the web.config into
- * the resulting folder, but instead choose to directly put it into the ZIP file,
- * to avoid having our application pool recycle due to a new web.config.
+ * Preparing to zip entire "/hyperbuild-output/p5/" folder.
  */
 list-files::~/temp/hyperbuild-output/p5/
 list-folders:~/temp/hyperbuild-output/p5/
@@ -256,8 +247,28 @@ for-each:x:(/@list-files|/@list-folders)/*?name
   add:x:/../*/zip
     src
       src:x:/@_dp?value
+
+
+
+
+
+/*
+ * Checking if caller specified he wanted to include his web.config file.
+ */
+if:x:/@.signal/--/include-web-config?value
+  add:x:/../*/zip
+    src
+      src:/web.config
+
+
+
+
+
+/*
+ * Creating our resulting zip file for our main core distribution, which now should
+ * contain all the sources caller specified, including possibly his web.config file.
+ */
 zip:~/temp/hyperbuild-output/binaries.zip
-  src:/web.config
 
 
 
@@ -270,6 +281,11 @@ create-widget
   parent:output
   element:hr
   style:"margin-top:1rem;"
+create-widget
+  parent:output
+  element:h3
+  style:"margin-top:1rem;"
+  innerValue:Result
 list-files:~/temp/hyperbuild-output/
   filter:.zip|.pgp
 for-each:x:/@list-files/*?name
