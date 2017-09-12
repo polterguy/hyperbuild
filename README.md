@@ -157,7 +157,8 @@ app:some-unique-app-id
 a trusted distributor file with more than one PGP key within. If you wish to create a distribution with multiple trusted
 distributors, feel free to modify the _"trusted-app-distributors.hl"_ file by hand yourself.
 
-You should host your Bazar content file, at a URL, being e.g. `https://my-server.com/my-bazar.hl`, if you compare this file, to
-your Bazar declaration file. Whenever your Bazar content file later becomes updated, your users will have the option of downloading
-and installing new apps, and/or upgrades to your existing apps.
+You should host your Bazar content file, at a URL, being e.g. `https://my-server.com/my-bazar.hl`. Whenever your Bazar content file 
+later becomes updated, your users will have the option of downloading and installing new apps, and/or upgrades to your existing apps.
+This allows you to modify existing systems, previously installed by your users, automatically - Allowing anyone to add additional new apps
+to their existing systems.
 
