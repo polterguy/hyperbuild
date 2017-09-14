@@ -20,3 +20,14 @@ eval-x:x:/+/*
 create-event:p5.io.unroll-path.@HYPERBUILD
   return:/{0}
     :x:/@join?value
+
+
+
+
+
+/*
+ * Creates our version Active Event.
+ */
+create-event:hyperbuild.version
+
+  return:decimal:5.0
