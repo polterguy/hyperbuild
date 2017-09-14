@@ -92,16 +92,6 @@ copy-file:/startup.hl
 
 
 /*
- * Copying our "/desktop/" folder.
- */
-copy-folder:/desktop/
-  dest:~/temp/hyperbuild-output/p5/desktop/
-
-
-
-
-
-/*
  * Copying our "/modules/" folder.
  *
  * Notice, this has to be done such that we don't copy any "/.git/" folders, or

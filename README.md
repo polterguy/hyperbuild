@@ -28,9 +28,12 @@ the instructions on how to use it.
 This is your most important settings, and declares how you want your main distribution to be like. For most people, understanding
 these parts is enough - Unless you want to host your own Bazar.
 
-First you must choose which modules you want to include in your main distribution zip file. By default, only _"micro"_ is selected. 
+First you must choose which modules you want to include in your main distribution zip file. By default, only _"micro"_ and _"desktop"_ are selected. 
 _"micro"_ is normally crucial, since most P5 modules depends upon [Micro](https://github.com/polterguy/micro) being installed to 
-function properly. If you don't include the Bazar in your main configuration, you will have a _"static"_ system, without any Bazar 
+function properly. The _"desktop"_ module, is your main landing page, which shows the icons for each of your apps. You can remove the desktop module
+if you wish. However, if you remove the desktop, you'll need to edit your web.config, and add another app up as your _"p5.core.default-app"_ setting.
+
+If you don't include the Bazar in your main configuration, you will have a _"static"_ system, without any Bazar 
 integration - Which is probably quite useful, if all you want to do is to create and distribute your own apps, and/or any of the 
 integrated apps, as a stand alone web application/operating system.
 
