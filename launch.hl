@@ -464,7 +464,7 @@ create-widget:hyperbuild-main-container
                             /*
                              * Evaluating file responsible for creating our build.
                              */
-                            micro.evaluate.file:@HYPERBUILD/build.hl
+                            micro.evaluate.file:@HYPERBUILD/helpers/build.hl
                               core
 
                             /*
