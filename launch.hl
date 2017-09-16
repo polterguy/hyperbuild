@@ -228,7 +228,7 @@ create-widget:hyperbuild-main-container
                   onclick
 
                     /*
-                     * Making sure we get href attribute correctly.
+                     * Redirecting user to server's root URL.
                      */
                     p5.web.get-root-location
                     p5.web.set-location:x:/-?value
