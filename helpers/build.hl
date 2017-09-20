@@ -360,9 +360,44 @@ if
  * Checking if caller specified he wanted to include his web.config file.
  */
 if:x:/@.signal/--/include-web-config?value
+
+  /*
+   * Sanity checking that "startup-app" is actually included in main binaries.zip build.
+   */
+  split:x:/../*/startup-app?value
+    =:/
+  if:x:/../*/core/*/{0}
+    :x:/@split/0/-2?name
+    not
+    throw:Oops, you need to actually put your startup-app into the main core build
+
+  /*
+   * Yup, web.config going into the build, loading it as XML, and making sure we
+   * replace its "startup app", before we serialize it into zip file.
+   */
+  load-file:/web.config
+  xml2lambda:x:/@load-file/*?value
+
+  /*
+   * Setting "startup-app"
+   */
+  set:x:/@xml2lambda/**/appSettings/**/=p5.core.default-app/./*/\@value?value
+    src:x:/../*/startup-app?value
+
+  /*
+   * Transforming above lambda to XML again.
+   */
+  lambda2xml:x:/@xml2lambda/*
+
+  /*
+   * Saving file to "/temp/" folder, before adding it as web.config into build zip file.
+   */
+  save-file:~/temp/web.config.xml
+    src:x:/@lambda2xml?value
   add:x:/../*/zip
     src
-      src:/web.config
+      src:~/temp/web.config.xml
+        as:web.config
 
 
 

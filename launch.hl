@@ -200,6 +200,53 @@ insert-before:x:/../*/create-widget/**/micro.widgets.wizard-form/*/collection
       .data-field:include-web-config
       info:Include web.config file
       checked
+      onchange
+
+        /*
+         * Disabling/enabling startup app select list.
+         */
+        get-widget-property:x:/../*/_event?value
+          checked
+        if:x:/-/*/*
+          delete-widget-property:startup-app
+            disabled
+        else
+          set-widget-property:startup-app
+            disabled
+
+
+
+
+
+/*
+ * Adding our "startup app" select dropdown listbox.
+ */
+insert-before:x:/../*/create-widget/**/micro.widgets.wizard-form/*/collection
+  src
+    br
+    select:startup-app
+      .data-field:startup-app
+      info:Startup app
+      oninit
+
+        /*
+         * Figuring out candidates.
+         */
+        list-folders:/modules/
+        list-files:x:/-/*?name
+          filter:launch.hl
+        for-each:x:/-/*?name
+          split:x:/@_dp?value
+            =:/
+          if:x:/-/0/-2?name
+            =:desktop
+            add:x:/..for-each/*/create-widget
+              src:selected
+          create-widget
+            element:option
+            parent:x:/../*/_event?value
+            innerValue:x:/@split/0/-2?name
+            value:x:/@_dp?value
 
 
 
@@ -418,6 +465,14 @@ create-widget:hyperbuild-main-container
                               add:x:/..try/*/micro.evaluate.file
                                 src
                                   include-web-config:bool:true
+
+                              /*
+                               * Passing in startup-app
+                               */
+                              add:x:/+/*
+                                src:x:/@micro.widgets.wizard-form.value/*/startup-app
+                              add:x:/..try/*/micro.evaluate.file
+                                src
 
                             /*
                              * Checking if user wants to build additional modules.
