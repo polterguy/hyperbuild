@@ -379,10 +379,26 @@ if:x:/@.signal/--/include-web-config?value
   xml2lambda:x:/@load-file/*?value
 
   /*
-   * Setting "startup-app"
+   * Setting "startup-app".
    */
   set:x:/@xml2lambda/**/appSettings/**/=p5.core.default-app/./*/\@value?value
     src:x:/../*/startup-app?value
+
+  /*
+   * Setting "mysql-connection-string".
+   */
+  set:x:/@xml2lambda/**/connectionStrings/*/add/*/\@name/=MYSQL_GENERIC_CONNECTION_STRING/./*/\@connectionString?value
+    src:x:/../*/mysql-connection-string?value
+
+  /*
+   * Setting PayPal settings.
+   */
+  set:x:/@xml2lambda/**/appSettings/**/=paypal.sandbox/./*/\@value?value
+    src:x:/../*/paypal-sandbox?value
+  set:x:/@xml2lambda/**/appSettings/**/=paypal.production/./*/\@value?value
+    src:x:/../*/paypal-production?value
+  set:x:/@xml2lambda/**/appSettings/**/=paypal.type/./*/\@value?value
+    src:x:/../*/paypal-type?value
 
   /*
    * Transforming above lambda to XML again.
