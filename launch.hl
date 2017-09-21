@@ -109,12 +109,24 @@ for-each:x:/@list-folders/*?name
     =:micro
     or:x:/@split/0/-?name
       =:desktop
+    or:x:/@split/0/-?name
+      =:camphora-common
 
     /*
-     * "micro" iteration, making sure we by default check it by default.
+     * "micro" or "bazar" iteration, making sure we by default check it by default.
      */
     add:x:/..for-each/*/insert-before/*/*
       src:checked
+
+    /*
+     * Checking if this is "desktop" iteration, at which point we disable the checkbox,
+     * since the system is anyways dependent upon "desktop" to function, since it sets
+     * th server salt, etc.
+     */
+    if:x:/@split/0/-?name
+      =:desktop
+      add:x:/..for-each/*/insert-before/*/*
+        src:disabled
 
   else-if:x:/@split/0/-?name
     =:bazar
