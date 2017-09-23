@@ -342,8 +342,11 @@ if
      * "trusted-app-distributors.hl" file with his [fingerprint], and his [key-id].
      */
     _trusted
+    to-upper:x:/../*/fingerprint?value
+    eval-x:x:/+/*/*
     add:x:/@_trusted
-      src:x:/../*/fingerprint
+      src
+        fingerprint:x:/@to-upper?value
     p5.crypto.get-key-details:x:/../*/fingerprint?value
     add:x:/@_trusted/*
       src:@"key-id:0x{0}"
