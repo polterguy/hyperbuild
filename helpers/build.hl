@@ -282,13 +282,32 @@ This folder contains your public files, which anyone with a direct link can easi
  * Creating our default "/common/" folder structure.
  */
 create-folder:~/temp/hyperbuild-output/p5/common/
+
+/*
+ * Creating "/common/temp/" folder.
+ */
+create-folder:~/temp/hyperbuild-output/p5/common/temp/
+save-file:~/temp/hyperbuild-output/p5/common/temp/README.md
+  src:"Temporary common files"
+
+/*
+ * Creating "/common/documents/" folder.
+ */
 create-folder:~/temp/hyperbuild-output/p5/common/documents/
+
+/*
+ * Creating "/common/documents/private/" folder.
+ */
 create-folder:~/temp/hyperbuild-output/p5/common/documents/private/
 save-file:~/temp/hyperbuild-output/p5/common/documents/private/README.md
-  src:"Common public files"
+  src:"Common private files"
+
+/*
+ * Creating "/common/documents/public/" folder.
+ */
 create-folder:~/temp/hyperbuild-output/p5/common/documents/public/
 save-file:~/temp/hyperbuild-output/p5/common/documents/public/README.md
-  src:"Common private files"
+  src:"Common public files"
 
 
 
