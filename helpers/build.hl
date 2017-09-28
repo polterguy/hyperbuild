@@ -72,6 +72,30 @@ copy-file:/Default.aspx
 
 
 /*
+ * Copying the icon files
+ */
+copy-file:/android-chrome-192x192.png
+  dest:~/temp/hyperbuild-output/p5/
+copy-file:/android-chrome-256x256.png
+  dest:~/temp/hyperbuild-output/p5/
+copy-file:/apple-touch-icon.png
+  dest:~/temp/hyperbuild-output/p5/
+copy-file:/browserconfig.xml
+  dest:~/temp/hyperbuild-output/p5/
+copy-file:/favicon-16x16.png
+  dest:~/temp/hyperbuild-output/p5/
+copy-file:/favicon-32x32.png
+  dest:~/temp/hyperbuild-output/p5/
+copy-file:/mstile-150x150.png
+  dest:~/temp/hyperbuild-output/p5/
+copy-file:/safari-pinned-tab.svg
+  dest:~/temp/hyperbuild-output/p5/
+
+
+
+
+
+/*
  * Copying our Global.asax file.
  */
 copy-file:/Global.asax
