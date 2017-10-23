@@ -76,7 +76,7 @@ copy-file:/Default.aspx
  */
 copy-file:/android-chrome-192x192.png
   dest:~/temp/hyperbuild-output/p5/
-copy-file:/android-chrome-256x256.png
+copy-file:/android-chrome-512x512.png
   dest:~/temp/hyperbuild-output/p5/
 copy-file:/apple-touch-icon.png
   dest:~/temp/hyperbuild-output/p5/
