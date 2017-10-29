@@ -348,15 +348,19 @@ create-widget:hyperbuild-main-container
             div
               class:right
               widgets
-                button
-                  innerValue:@"<span class=""icon-home""></span>"
-                  onclick
+                div
+                  class:strip toolbar
+                  style:"display:inline-block;"
+                  widgets
+                    button
+                      innerValue:@"<span class=""icon-home""></span>"
+                      onclick
 
-                    /*
-                     * Redirecting user to server's root URL.
-                     */
-                    p5.web.get-root-location
-                    p5.web.set-location:x:/-?value
+                        /*
+                         * Redirecting user to server's root URL.
+                         */
+                        p5.web.get-root-location
+                        p5.web.set-location:x:/-?value
 
     div
       class:row
