@@ -353,7 +353,7 @@ create-widget:hyperbuild-main-container
                   style:"display:inline-block;"
                   widgets
                     button
-                      innerValue:@"<span class=""icon-home""></span>"
+                      innerValue:@"<span class=""icon-home3""></span>"
                       onclick
 
                         /*

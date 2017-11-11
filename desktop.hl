@@ -1,11 +1,11 @@
 
 /*
- * Desktop widget file for server management.
+ * Desktop widget file for Hyperbuild.
  */
 container
   element:a
   class:desktop-app shaded rounded air-inner
-  title:Bazar
+  title:Hyperbuild
   oninit
 
     /*
@@ -30,4 +30,4 @@ container
   widgets
     span
       class:desktop-app-name
-      innerValue:@"<span class=""icon-globe desktop-app-icon""></span><span style=""position:absolute;top:5px;right:5px;font-size:.7rem;"">Hyperbuild</span>"
+      innerValue:@"<span class=""icon-sphere desktop-app-icon""></span><span style=""position:absolute;top:5px;right:5px;font-size:.7rem;"">Hyperbuild</span>"
