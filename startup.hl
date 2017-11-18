@@ -30,4 +30,4 @@ create-event:p5.io.unroll-path.@HYPERBUILD
  */
 create-event:hyperbuild.version
 
-  return:decimal:5.2
+  return:decimal:5.3
