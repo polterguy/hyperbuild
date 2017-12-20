@@ -1,4 +1,3 @@
-
 # Hyperbuild, Phosphorus Five's build system
 
 Hyperbuild is the build system for [Phosphorus Five](https://github.com/polterguy/phosphorusfive), which allows you to 
@@ -11,7 +10,7 @@ unless you want to host your own Bazar.
 
 ![alt screenshot](media/screenshot-4.png)
 
-If you have created your own modules, or changed existing modules, Hyperbuild will allow you to create
+If you have created your own modules, or changed an existing modules, Hyperbuild will allow you to create
 a binary release of your system, according to whatever changes you have applied to your original system.
 
 **Notice** - When you run Hyperbuild, it will copy your DLLs from your _"bin"_ folder, as they are in its current version.
