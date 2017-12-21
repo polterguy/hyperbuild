@@ -187,3 +187,15 @@ later becomes updated, your users will have the option of downloading and instal
 This allows you to modify existing systems, previously installed by your users, automatically - Allowing anyone to add additional new apps
 to their existing systems.
 
+## Installation
+
+The easiest way to install it, is to [install phosphorus five](https://github.com/polterguy/phosphorusfive),
+for then to visit _"The Bazar"_, and simply install it through the Bazar on your local machine/server.
+However, if you want a more manual installation path, you can download the latest release,
+unzip it, and move the unzipped root folder into your _"core/p5.webapp/modules"_ folder. If you
+choose this path, you should rename the folder, removing any version information, making sure
+your module folder is called exactly _"magic-menu"_. Installation through the Bazar
+also requires you having some sort of GnuPG client on your machine/server. If you don't want
+to fiddle with installing GnuPG, you can resort to download the latest zip file release directly.
+
+
