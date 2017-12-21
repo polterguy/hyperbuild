@@ -1,4 +1,3 @@
-﻿
 /*
  * File responsible for creating a build.
  *
@@ -74,21 +73,7 @@ copy-file:/Default.aspx
 /*
  * Copying the icon files
  */
-copy-file:/android-chrome-192x192.png
-  dest:~/temp/hyperbuild-output/p5/
-copy-file:/android-chrome-512x512.png
-  dest:~/temp/hyperbuild-output/p5/
-copy-file:/apple-touch-icon.png
-  dest:~/temp/hyperbuild-output/p5/
-copy-file:/browserconfig.xml
-  dest:~/temp/hyperbuild-output/p5/
-copy-file:/favicon-16x16.png
-  dest:~/temp/hyperbuild-output/p5/
-copy-file:/favicon-32x32.png
-  dest:~/temp/hyperbuild-output/p5/
-copy-file:/mstile-150x150.png
-  dest:~/temp/hyperbuild-output/p5/
-copy-file:/safari-pinned-tab.svg
+copy-file:/favicon.ico
   dest:~/temp/hyperbuild-output/p5/
 
 
@@ -137,9 +122,6 @@ create-folder:~/temp/hyperbuild-output/p5/modules/
  * If we don't exclude "/.git/" folders and "/.gitignore" files this way, it will be
  * impossible to delete these folders/files later, since they're "protected" from the
  * web server's user account on Windows.
- *
- * Fuck Microsoft, this used to be ONE FREAKIN' LINE OF CODE before I started checking if
- * it worked on Windows ...!!
  */
 list-folders:/modules/
 for-each:x:/@list-folders/*?name
