@@ -1,12 +1,18 @@
 
 /*
- * Desktop widget file for Hyperbuild.
+ * Desktop widget.
  */
 container
   element:a
   class:desktop-app shaded rounded air-inner
-  title:Hyperbuild
+  title:Hyperbuild is a build system allowing you to replicate your system
   widgets
     span
       class:desktop-app-name
-      innerValue:@"<span class=""icon-sphere desktop-app-icon""></span><span style=""position:absolute;top:5px;right:5px;font-size:.7rem;"">Hyperbuild</span>"
+      widgets
+        literal
+          element:span
+          class:icon-sphere desktop-app-icon
+        span
+          class:desktop-app-text
+          innerValue:Build
