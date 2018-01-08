@@ -60,13 +60,11 @@ if:x:/@p5.web.query.get/*?value
 /*
  * Including Micro, adding Awesome Fonts, and serious skin.
  */
-micro.page.minify-and-bundle-css-file
+p5.web.include-css-file
   @MICRO/media/main.css
   @MICRO/media/fonts.css
   @MICRO/media/skins/serious.css
-p5.web.include-css-file:x:/-?value
-micro.page.minify-and-bundle-css-file:@HYPERBUILD/media/main.css
-p5.web.include-css-file:x:/-?value
+  @HYPERBUILD/media/main.css
 
 
 
