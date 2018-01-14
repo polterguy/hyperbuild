@@ -481,7 +481,6 @@ create-widget:hyperbuild-main-container
                     widgets
                       button:start-build
                         innerValue:Build
-                        style:"margin-bottom:0;"
                         onclick
 
                           /*

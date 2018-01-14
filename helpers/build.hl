@@ -512,7 +512,7 @@ p5.crypto.hash.create-sha1-file:~/temp/hyperbuild-output/binaries.zip
   hex:true
 create-widget
   parent:output
-  style:"clear:both;margin-bottom:0;"
+  style:"clear:both;"
   innerValue:SHA1 checksum of binaries.zip; '{0}'
     :x:/@p5.crypto.hash.create-sha1-file?value
 
