@@ -3,15 +3,12 @@
  */
 container
   element:a
-  class:desktop-app shaded rounded air-inner
-  title:Hyperbuild is a build system allowing you to replicate your system
+  class:desktop-app button shaded
+  title:Replicate your system in seconds
   widgets
+    literal
+      element:span
+      class:icon-sphere desktop-app-icon
     span
-      class:desktop-app-name
-      widgets
-        literal
-          element:span
-          class:icon-sphere desktop-app-icon
-        span
-          class:desktop-app-text
-          innerValue:Hyperbuild
+      class:desktop-app-text
+      innerValue:Hyperbuild
