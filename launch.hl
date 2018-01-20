@@ -61,7 +61,6 @@ if:x:/@p5.web.query.get/*?value
  * Including Micro, adding Awesome Fonts, and serious skin.
  */
 micro.css.include
-  skin:serious
 p5.web.include-css-file
   @HYPERBUILD/media/main.css
 
