@@ -235,7 +235,7 @@ for-each:x:/@list-folders/*?name
        * extracting it from our GnuPG context, using the supplied password.
        */
       eval-x:x:/+|/+/**
-      p5.mime.save:~/temp/hyperbuild-output/{0}.zip.pgp
+      p5.mime.save:~/temp/hyperbuild-output/{0}.pgp.zip
         :x:/@split/0/-?name
         application:zip
           filename:~/temp/hyperbuild-output/{0}.zip
