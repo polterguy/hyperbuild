@@ -85,7 +85,11 @@ for-each:x:/@list-folders/*?name
     or:x:/@split/0/-?name
       =:desktop
     or:x:/@split/0/-?name
-      =:camphora-common
+      =:hyper-ide
+    or:x:/@split/0/-?name
+      =:hyper-core
+    or:x:/@split/0/-?name
+      =:peeples
 
     /*
      * "micro" or "bazar" iteration, making sure we by default check it by default.
@@ -96,7 +100,7 @@ for-each:x:/@list-folders/*?name
     /*
      * Checking if this is "desktop" iteration, at which point we disable the checkbox,
      * since the system is anyways dependent upon "desktop" to function, since it sets
-     * th server salt, etc.
+     * the server salt, etc.
      */
     if:x:/@split/0/-?name
       =:desktop
@@ -138,16 +142,6 @@ for-each:x:/@list-folders/*?name
             set-widget-property:x:/@p5.web.widgets.find/*/*?value
               visible:false
 
-  else-if:x:/@split/0/-?name
-    !=:bazar
-
-    /*
-     * Not "micro" iteration, making sure we by default check these guys
-     * in the "sign module" checkboxes.
-     */
-    add:x:/..for-each/*/add/*/*
-      src:checked
-
   /*
    * Adding our checkbox into our wizard form, twice, to make it possible to
    * both put modules into main build, in addition to putting them into PGP signed module
@@ -173,6 +167,7 @@ for-each:x:/@list-folders/*?name
         info:x:/@split/0/-?name
         disabled
         .sign
+        checked
 
 
 
@@ -254,6 +249,23 @@ insert-before:x:/../*/create-widget/**/micro.widgets.wizard-form/*/collection
  */
 insert-before:x:/../*/create-widget/**/micro.widgets.wizard-form/*/collection
   src
+    text:release-version
+      info:Version
+      .data-field:version
+      title:Version of your release
+      type:number
+      step:0.1
+      oninit
+
+        /*
+         * Retrieving current desktop version, and incrementing by one.
+         */
+        desktop.version
+        +:x:/-?value.decimal
+          _:decimal:0.1
+        set-widget-property:x:/../*/_event?value
+          value:x:/@+?value
+
     select:startup-app
       .data-field:startup-app
       info:Startup app
@@ -289,7 +301,7 @@ insert-before:x:/../*/create-widget/**/micro.widgets.wizard-form/*/collection
       value:ASS9zCiAjKx2cW_Gy234SW5qfX2mWlRoQZDelsokl2Dk2RFX9WeJ3yF5bPu9v_Ajcqayy6zdvLFu-0g0
       title:PayPal sandbox API key
     text:paypal-production
-      info:PayPal production
+      info:PayPal prod.
       .data-field:paypal-production
       value:AYXmWWv-OKV_RFjcksDoK4nJ0djwlhCmXp0h9staoD4U9dsY0oKfw8PBPH9TJ68s0SHjqGzWJNOT0inv
       title:PayPal production API key
@@ -457,22 +469,23 @@ create-widget:hyperbuild-main-container
                         .advanced
                         innerValue:Supply an optional declaration for your Bazar(s).
                         for:bazar-declaration
-                      textarea:bazar-declaration
+                      div
                         .advanced
-                        .data-field:bazar
-                        info:Bazar declaration ...
-                        rows:7
-                        disabled
-                        oninit
+                        widgets
+                          micro.widgets.codemirror
+                            .data-field:bazar
+                            oninit
 
-                          /*
-                           * Loading the default Bazar declaration file, and changing the content
-                           * of textarea to lambda of file.
-                           */
-                          load-file:/modules/bazar/configuration/bazars.hl
-                          lambda2hyper:x:/@load-file/*/*
-                          set-widget-property:x:/../*/_event?value
-                            innerValue:x:/@lambda2hyper?value
+                              /*
+                               * Loading the default Bazar declaration file, and changing the content
+                               * of textarea to lambda of file.
+                               */
+                              load-file:/modules/bazar/configuration/bazars.hl
+                              lambda2hyper:x:/@load-file/*/*
+                              p5.web.widgets.find:x:/../*/_event?value
+                                element:textarea
+                              set-widget-property:x:/-/*/*?value
+                                innerValue:x:/@lambda2hyper?value
 
                   div
                     class:right
@@ -527,6 +540,14 @@ create-widget:hyperbuild-main-container
                                */
                               add:x:/+/*
                                 src:x:/@micro.widgets.wizard-form.value/*/startup-app
+                              add:x:/..try/*/micro.evaluate.file
+                                src
+
+                              /*
+                               * Passing in version
+                               */
+                              add:x:/+/*
+                                src:x:/@micro.widgets.wizard-form.value/*/version
                               add:x:/..try/*/micro.evaluate.file
                                 src
 

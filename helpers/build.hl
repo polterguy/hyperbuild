@@ -71,7 +71,7 @@ copy-file:/Default.aspx
 
 
 /*
- * Copying the icon files
+ * Copying the icon file.
  */
 copy-file:/favicon.ico
   dest:~/temp/hyperbuild-output/p5/
@@ -176,6 +176,23 @@ for-each:x:/@list-folders/*?name
       dest:~/temp/hyperbuild-output/p5/modules/{0}/{1}
         :x:/@split/0/-2?name
         :x:/@split/0/-?name
+
+  /*
+   * Then checking if there exists a /startup/version.hl" file for currently iterated module,
+   * and if so, making sure we modify it such that it gets the specified version.
+   */
+  if
+    fetch:x:/0/0?value
+      file-exists:~/temp/hyperbuild-output/p5/modules/{0}/startup/version.hl
+        :x:/@split/0/-?name
+    load-file:~/temp/hyperbuild-output/p5/modules/{0}/startup/version.hl
+      :x:/@split/0/-?name
+    set:x:/@load-file/**/return?value
+      src:x:/@.signal/--/version?value.decimal
+    lambda2hyper:x:/@load-file/*/*
+    save-file:~/temp/hyperbuild-output/p5/modules/{0}/startup/version.hl
+      :x:/@split/0/-?name
+      src:x:/@lambda2hyper?value
 
 
 
