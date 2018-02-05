@@ -324,7 +324,7 @@ insert-before:x:/../*/create-widget/**/micro.widgets.wizard-form/*/collection
 create-widget:hyperbuild-main-container
   class:container
   widgets
-    micro.widgets.obscurer:build-obscurer
+    micro.widgets.cover:build-obscurer
       style:"display:none;"
       message:"Please wait while we create your build ..."
     div
@@ -507,7 +507,7 @@ create-widget:hyperbuild-main-container
                            * Serializing above wizard-form, to figure out which modules user
                            * wants to include in his main build.
                            */
-                          micro.widgets.wizard-form.value:modules
+                          micro.form.serialize:modules
 
                           /*
                            * Wrapping invocation in a try/catch block, in case an exception occurs.
@@ -517,7 +517,7 @@ create-widget:hyperbuild-main-container
                             /*
                              * Adding all "core modules" user wants to add to his main distribution.
                              */
-                            for-each:x:@"/@micro.widgets.wizard-form.value/*/""=:bool:true""(/~core-modules-)?name"
+                            for-each:x:@"/@micro.form.serialize/*/""=:bool:true""(/~core-modules-)?name"
                               split:x:/@_dp?value
                                 =:core-modules-
                               add:x:/..try/*/micro.evaluate.file/*/core
@@ -526,7 +526,7 @@ create-widget:hyperbuild-main-container
                             /*
                              * Checking if user wants to include his web.config file.
                              */
-                            if:x:/@micro.widgets.wizard-form.value/*/include-web-config?value
+                            if:x:/@micro.form.serialize/*/include-web-config?value
 
                               /*
                                * User wants to include his web.config file.
@@ -539,7 +539,7 @@ create-widget:hyperbuild-main-container
                                * Passing in startup-app
                                */
                               add:x:/+/*
-                                src:x:/@micro.widgets.wizard-form.value/*/startup-app
+                                src:x:/@micro.form.serialize/*/startup-app
                               add:x:/..try/*/micro.evaluate.file
                                 src
 
@@ -547,7 +547,7 @@ create-widget:hyperbuild-main-container
                                * Passing in version
                                */
                               add:x:/+/*
-                                src:x:/@micro.widgets.wizard-form.value/*/version
+                                src:x:/@micro.form.serialize/*/version
                               add:x:/..try/*/micro.evaluate.file
                                 src
 
@@ -555,7 +555,7 @@ create-widget:hyperbuild-main-container
                                * Passing in MySQL connection string.
                                */
                               add:x:/+/*
-                                src:x:/@micro.widgets.wizard-form.value/*/mysql-connection-string
+                                src:x:/@micro.form.serialize/*/mysql-connection-string
                               add:x:/..try/*/micro.evaluate.file
                                 src
 
@@ -563,14 +563,14 @@ create-widget:hyperbuild-main-container
                                * Passing in PayPal settings.
                                */
                               add:x:/+/*
-                                src:x:/@micro.widgets.wizard-form.value/*(/paypal-sandbox|/paypal-production|/paypal-type)
+                                src:x:/@micro.form.serialize/*(/paypal-sandbox|/paypal-production|/paypal-type)
                               add:x:/..try/*/micro.evaluate.file
                                 src
 
                             /*
                              * Checking if user wants to build additional modules.
                              */
-                            if:x:/@micro.widgets.wizard-form.value/*/additional-modules?value
+                            if:x:/@micro.form.serialize/*/additional-modules?value
 
                               /*
                                * User wants to build additional modules.
@@ -581,7 +581,7 @@ create-widget:hyperbuild-main-container
                                */
                               add:x:/..try/*/micro.evaluate.file
                                 src:modules
-                              for-each:x:@"/@micro.widgets.wizard-form.value/*/""=:bool:true""(/~additional-modules-)?name"
+                              for-each:x:@"/@micro.form.serialize/*/""=:bool:true""(/~additional-modules-)?name"
                                 split:x:/@_dp?value
                                   =:additional-modules-
                                 add:x:/..try/*/micro.evaluate.file/*/modules
@@ -591,15 +591,15 @@ create-widget:hyperbuild-main-container
                                * Checking if caller supplied a PGP password, at which
                                * point we add PGP fingerprint and password as an argument.
                                */
-                              if:x:/@micro.widgets.wizard-form.value/*/password?value
-                                and:x:/@micro.widgets.wizard-form.value/*/password?value
+                              if:x:/@micro.form.serialize/*/password?value
+                                and:x:/@micro.form.serialize/*/password?value
                                   !=:
 
                                 /*
                                  * User supplied a password, and wants to cryptographically sign some modules.
                                  */
                                 add:x:/..try/*/micro.evaluate.file
-                                  src:x:/@micro.widgets.wizard-form.value/*(/fingerprint|/password)
+                                  src:x:/@micro.form.serialize/*(/fingerprint|/password)
 
                               /*
                                * Passing in the "Bazar declaration" to build process.
@@ -607,7 +607,7 @@ create-widget:hyperbuild-main-container
                               eval-x:x:/+/*/*
                               add:x:/..try/*/micro.evaluate.file
                                 src
-                                  bazar:x:/@micro.widgets.wizard-form.value/*/bazar?value
+                                  bazar:x:/@micro.form.serialize/*/bazar?value
 
                             /*
                              * Evaluating file responsible for creating our build.
