@@ -339,7 +339,7 @@ save-file:~/temp/hyperbuild-output/p5/common/documents/public/README.md
 /*
  * Preparing to zip entire "/hyperbuild-output/p5/" folder.
  */
-list-files::~/temp/hyperbuild-output/p5/
+list-files:~/temp/hyperbuild-output/p5/
 list-folders:~/temp/hyperbuild-output/p5/
 for-each:x:(/@list-files|/@list-folders)/*?name
   eval-x:x:/+/*/*
