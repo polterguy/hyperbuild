@@ -8,325 +8,103 @@
 
 
 /*
- * Checking if this is a download, and if so, initiating download of file,
- * and returning early.
- */
-p5.web.query.get:filename
-if:x:/@p5.web.query.get/*?value
-
-  /*
-   * User is trying to download a file, first setting "Content-Disposition" header.
-   */
-  p5.web.header.set:Content-Disposition
-    src:@"attachment; filename=""{0}"""
-      :x:/@p5.web.query.get/*?value
-
-  /*
-   * Then setting "Content-Type" for file, which depends upon whether or not file
-   * is a .zip file or a .pgp file.
-   */
-  split:x:/@p5.web.query.get/*?value
-    =:.
-  if:x:/@split/0/-?name
-    =:zip
-
-    /*
-     * Zip file.
-     */
-    p5.web.header.set:Content-Type
-      src:application/zip
-    p5.web.header.set:Content-Transfer-Encoding
-      src:binary
-
-  else
-
-    /*
-     * Cryptographically signed zip file (.pgp).
-     */
-    p5.web.header.set:Content-Type
-      src:application/x-pgp
-
-  /*
-   * Echoing file to client, and returning early.
-   */
-  p5.web.echo-file:~/temp/hyperbuild-output/{0}
-    :x:/@p5.web.query.get/*?value
-  return
-
-
-
-
-
-/*
  * Including Micro, adding Awesome Fonts, and serious skin.
  */
 micro.css.include
-p5.web.include-css-file
-  @HYPERBUILD/media/main.css
 
 
 
 
 
 /*
- * Iterating through all "/modules/", and creating a check box for each in our
- * wizard form.
+ * Iterating through all "/modules/", and making sure we add each module into
+ * the [.modules] lambda.
  */
+.modules
 list-folders:/modules/
 for-each:x:/@list-folders/*?name
+
+  /*
+   * Figuring out module name
+   */
   split:x:/@_dp?value
     =:/
+  add:x:/@.modules
+    src:x:/@split/0/-?name
+
+
+
+
+
+/*
+ * Removing license module, if it exists, since license needs to be purchased
+ * for each server.
+ */
+set:x:/@.modules/*/license
+
+
+
+
+
+/*
+ * Adding a select option for each module into "build single module" select dropdown.
+ */
+for-each:x:/@.modules/*?name
+  eval-x:x:/+/*/*/*
+  add:x:/../*/create-widget/**/select/=hyperbuild-build-single-module/*/widgets
+    src
+      option
+        innerValue:x:/@_dp?value
+
+
+
+
+
+/*
+ * Adding a checkbox for each module into "main distro" widget.
+ */
+for-each:x:/@.modules/*?name
 
   /*
-   * Making sure we check Micro by default.
+   * Checking if this module should be checked off by default.
    */
-  if:x:/@split/0/-?name
-    =:micro
-    or:x:/@split/0/-?name
-      =:desktop
-    or:x:/@split/0/-?name
-      =:hyper-ide
-    or:x:/@split/0/-?name
-      =:hyper-core
-    or:x:/@split/0/-?name
-      =:peeples
+  if:x:/@_dp?value
+    =:desktop
+    or:x:/@_dp?value
+      =:micro
 
     /*
-     * "micro" or "bazar" iteration, making sure we by default check it by default.
+     * Module should be included by default.
      */
-    add:x:/..for-each/*/insert-before/*/*
-      src:checked
-
-    /*
-     * Checking if this is "desktop" iteration, at which point we disable the checkbox,
-     * since the system is anyways dependent upon "desktop" to function, since it sets
-     * the server salt, etc.
-     */
-    if:x:/@split/0/-?name
-      =:desktop
-      add:x:/..for-each/*/insert-before/*/*
-        src:disabled
-
-  else-if:x:/@split/0/-?name
-    =:bazar
-
-    /*
-     * Adding onchange event, that displays/hides all the "advanced settings".
-     */
-    add:x:/..for-each/*/insert-before/*/*
+    add:x:/..for-each/*/add/*/*/*/*/input
       src
-        onchange
-
-          /*
-           * Checking if user checked or removed checked for Bazar, and acting accordingly.
-           */
-          get-widget-property:x:/../*/_event?value
-            checked
-          if:x:/@get-widget-property/*/*
-
-            /*
-             * User selected Bazar, making sure we display all "advanced settings".
-             */
-            p5.web.widgets.find
-              .advanced
-            set-widget-property:x:/@p5.web.widgets.find/*/*?value
-              visible:true
-
-          else
-
-            /*
-             * User de-selected Bazar, making sure we hide all "advanced settings".
-             */
-            p5.web.widgets.find
-              .advanced
-            set-widget-property:x:/@p5.web.widgets.find/*/*?value
-              visible:false
-
-  /*
-   * Adding our checkbox into our wizard form, twice, to make it possible to
-   * both put modules into main build, in addition to putting them into PGP signed module
-   * list.
-   */
-  eval-x:x:/+/*/*/*
-  insert-before:x:/../*/create-widget/**/micro.widgets.wizard-form/*/collection
-    src
-      checkbox
-        .data-field:core-modules-{0}
-          :x:/@split/0/-?name
-        info:x:/@split/0/-?name
-
-  /*
-   * Adding to "sign module list".
-   */
-  eval-x:x:/+/*/*/*
-  add:x:/../*/create-widget/**/micro.widgets.wizard-form/*/collection/*/widgets
-    src
-      checkbox
-        .data-field:additional-modules-{0}
-          :x:/@split/0/-?name
-        info:x:/@split/0/-?name
-        disabled
-        .sign
         checked
 
-
-
-
-
-/*
- * Adding our "include web.config" checkbox.
- */
-insert-before:x:/../*/create-widget/**/micro.widgets.wizard-form/*/collection
-  src
-    hr
-    h3
-      innerValue:Settings
-    checkbox
-      .data-field:include-web-config
-      info:Include web.config file
-      checked
-      onchange
-
-        /*
-         * Disabling/enabling startup app select list.
-         *
-         * Since we cannot modify the startup app if user doesn't include
-         * a web.config (obviously), we disable the startup-app select dropdown
-         * listbox when the web.config is excluded from the main build.
-         */
-        get-widget-property:x:/../*/_event?value
-          checked
-        if:x:/-/*/*
-
-          /*
-           * Web.config is to be distributed, making sure we enable "select startup-app"
-           * dropdown listbox, "connection string" textbox, and PayPal settings.
-           */
-          p5.web.widgets.get-parent:startup-app
-          set-widget-property:x:/-/*/*?value
-            visible:true
-          p5.web.widgets.get-parent:mysql-connection-string
-          set-widget-property:x:/-/*/*?value
-            visible:true
-          p5.web.widgets.get-parent:paypal-sandbox
-          set-widget-property:x:/-/*/*?value
-            visible:true
-          p5.web.widgets.get-parent:paypal-production
-          set-widget-property:x:/-/*/*?value
-            visible:true
-          p5.web.widgets.get-parent:paypal-type
-          set-widget-property:x:/-/*/*?value
-            visible:true
-
-        else
-
-          /*
-           * Web.config is NOT to be distributed, making sure we disable "select startup-app"
-           * dropdown listbox and "connection string" textbox.
-           */
-          p5.web.widgets.get-parent:startup-app
-          set-widget-property:x:/-/*/*?value
-            visible:false
-          p5.web.widgets.get-parent:mysql-connection-string
-          set-widget-property:x:/-/*/*?value
-            visible:false
-          p5.web.widgets.get-parent:paypal-sandbox
-          set-widget-property:x:/-/*/*?value
-            visible:false
-          p5.web.widgets.get-parent:paypal-production
-          set-widget-property:x:/-/*/*?value
-            visible:false
-          p5.web.widgets.get-parent:paypal-type
-          set-widget-property:x:/-/*/*?value
-            visible:false
+  /*
+   * Adding checkbox.
+   */
+  eval-x:x:/+/*/*/*/*/*
+  add:x:/../*/create-widget/**/widgets/=modules
+    src
+      label
+        widgets
+          span
+            innerValue:x:/@_dp?value
+          input
+            type:checkbox
+            .data-field:/modules/{0}/
+              :x:/@_dp?value
 
 
 
 
 
 /*
- * Adding our "startup app" select dropdown listbox.
- */
-insert-before:x:/../*/create-widget/**/micro.widgets.wizard-form/*/collection
-  src
-    text:release-version
-      info:Version
-      .data-field:version
-      title:Version of your release
-      type:number
-      step:0.1
-      oninit
-
-        /*
-         * Retrieving current desktop version, and incrementing by one.
-         */
-        desktop.version
-        +:x:/-?value.decimal
-          _:decimal:0.1
-        set-widget-property:x:/../*/_event?value
-          value:x:/@+?value
-
-    select:startup-app
-      .data-field:startup-app
-      info:Startup app
-      oninit
-
-        /*
-         * Figuring out candidates.
-         */
-        list-folders:/modules/
-        list-files:x:/-/*?name
-          filter:launch.hl
-        for-each:x:/-/*?name
-          split:x:/@_dp?value
-            =:/
-          if:x:/-/0/-2?name
-            =:desktop
-            add:x:/..for-each/*/create-widget
-              src:selected
-          create-widget
-            element:option
-            parent:x:/../*/_event?value
-            innerValue:x:/@split/0/-2?name
-            value:x:/@_dp?value
-
-    text:mysql-connection-string
-      info:MySQL server
-      .data-field:mysql-connection-string
-      value:"server=localhost;User Id=root;charset=utf8mb4;"
-      title:Connection string to MySQL database
-    text:paypal-sandbox
-      info:PayPal sandbox
-      .data-field:paypal-sandbox
-      value:ASS9zCiAjKx2cW_Gy234SW5qfX2mWlRoQZDelsokl2Dk2RFX9WeJ3yF5bPu9v_Ajcqayy6zdvLFu-0g0
-      title:PayPal sandbox API key
-    text:paypal-production
-      info:PayPal prod.
-      .data-field:paypal-production
-      value:AYXmWWv-OKV_RFjcksDoK4nJ0djwlhCmXp0h9staoD4U9dsY0oKfw8PBPH9TJ68s0SHjqGzWJNOT0inv
-      title:PayPal production API key
-    select:paypal-type
-      .data-field:paypal-type
-      info:PayPal type
-      options
-        Production:production
-          .data-value:production
-        Sandbox:sandbox
-          .data-value:sandbox
-
-
-
-
-
-/*
- * Creating main content container.
+ * Creating our main wireframe widget.
  */
 create-widget:hyperbuild-main-container
   class:container
   widgets
-    micro.widgets.cover:build-obscurer
-      style:"display:none;"
-      message:"Please wait while we create your build ..."
     div
       class:row
       widgets
@@ -339,15 +117,11 @@ create-widget:hyperbuild-main-container
                 div
                   class:strip toolbar
                   widgets
-                    button
+                    a
+                      href:/
+                      class:button
+                      role:button
                       innerValue:@"<span class=""icon-home3""></span>"
-                      onclick
-
-                        /*
-                         * Redirecting user to server's root URL.
-                         */
-                        p5.web.get-root-location
-                        p5.web.set-location:x:/-?value
 
     div
       class:row
@@ -355,280 +129,100 @@ create-widget:hyperbuild-main-container
         div
           class:col-100
           widgets
-            div:build-configuration
+            div
               class:shaded rounded air-inner
-              style:"position:relative;"
               widgets
-                a
-                  href:"https://github.com/polterguy/hyperbuild"
-                  innerValue:@"<span class=""icon-question""></span>"
-                  target:_blank
-                  style:"position:absolute;top:.5rem;right:1rem;font-size:1.5rem;"
                 h3
-                  innerValue:Main distro modules
-                micro.widgets.wizard-form:modules
-                  collection
-                    .advanced
-                    visible:false
-                    widgets
-                      hr
-                      h3
-                        innerValue:Additional modules
-                      checkbox:sign-modules
-                        .data-field:additional-modules
-                        info:Build Bazar downloadable modules
-                        title:Check this button if you wish to sign other modules cryptographically with your own PGP key
-                        onchange
+                  innerValue:Hyperbuild
+                p
+                  innerValue:Build a single module. Choose a module you want to build, and click the <em>'Build'</em> button.
+                div
+                  class:strip fill
+                  widgets
+                    label
+                      innerValue:Module
+                    select:hyperbuild-build-single-module
+                      widgets
+                    button
+                      innerValue:Build
+                      onclick
+
+                        /*
+                         * Figuring out which module user selected, building it,
+                         * and downloading it to client.
+                         */
+                        get-widget-property:hyperbuild-build-single-module
+                          value
+
+                        /*
+                         * Checking if temp file exists, and if it does, deleting it.
+                         */
+                        if
+                          fetch:x:/0/0?value
+                            file-exists::~/temp/{0}.zip
+                              :x:/@get-widget-property/*/*?value
 
                           /*
-                           * Checking if button was turned on or off, and enabling PGP key selector accordingly.
+                           * There exists a temp file with the filename we need to use
+                           * for our output file, hence deleting it.
                            */
-                          get-widget-property:x:/../*/_event?value
-                            checked
-                          if:x:/@get-widget-property/*/*
+                          delete-file:~/temp/{0}.zip
+                            :x:/@get-widget-property/*/*?value
+
+                        /*
+                         * Zipping file, and downloading it to client.
+                         */
+                        zip:~/temp/{0}.zip
+                          :x:/@get-widget-property/*/*?value
+                          src:/modules/{0}/
+                            :x:/@get-widget-property/*/*?value
+                        micro.download.file:~/temp/{0}.zip
+                          :x:/@get-widget-property/*/*?value
+                hr
+                h3
+                  innerValue:Main distro
+                p
+                  innerValue:Build a main distro. Choose which modules you want to include in your main distro.
+                div:build-configuration
+                  widgets:modules
+                div
+                  class:right
+                  widgets
+                    button:hyperbuild-create-main-distro-btn
+                      innerValue:Build
+                      onclick
+
+                        /*
+                         * Making sure we create an obscurer, before we invoke the actual implementation.
+                         */
+                        create-widgets
+                          micro.widgets.cover:hyperbuild-cover-widget
+                            message:Please wait while I create your build ...
+
+                        /*
+                         * Creating a pingback, which does the actual heavy lifting.
+                         */
+                        micro.lambda.create-timeout
+                          milliseconds:1
+                          onfinish
 
                             /*
-                             * Enabling signing of modules.
+                             * Invoking Ajax method that is actually responsible for installing our module.
+                             *
+                             * Making sure we wrap invocation in a try/catch block.
                              */
-                            delete-widget-property:pgp-key
-                              disabled
-                            delete-widget-property:pgp-pwd
-                              disabled
+                            p5.web.widgets.ajax-events.raise:hyperbuild-create-main-distro-btn
+                              .onclick
+                            delete-widget:hyperbuild-cover-widget
 
-                            /*
-                             * Finding all "sign module checkboxes", and enabling them.
-                             */
-                            p5.web.widgets.find:modules
-                              .sign
-                            delete-widget-property:x:/@p5.web.widgets.find/*/*?value
-                              disabled
+                      .onclick
 
-                            /*
-                             * Finding "bazar declaration" textarea, and enabling it.
-                             */
-                            p5.web.widgets.find:modules
-                              .data-field:bazar
-                            delete-widget-property:x:/@p5.web.widgets.find/*/*?value
-                              disabled
-
-                          else
-
-                            /*
-                             * Disabling signing of modules.
-                             */
-                            set-widget-property:pgp-key
-                              disabled
-                            set-widget-property:pgp-pwd
-                              disabled
-
-                            /*
-                             * Finding all "sign module checkboxes", and disabling them.
-                             */
-                            p5.web.widgets.find:modules
-                              .sign
-                            set-widget-property:x:/@p5.web.widgets.find/*/*?value
-                              disabled
-
-                            /*
-                             * Finding "bazar declaration" textarea, and disabling it.
-                             */
-                            p5.web.widgets.find:modules
-                              .data-field:bazar
-                            set-widget-property:x:/@p5.web.widgets.find/*/*?value
-                              disabled
-
-                      select:pgp-key
-                        .advanced
-                        .data-field:fingerprint
-                        info:PGP key
-                        title:Choose your PGP key's fingerprint here
-                        disabled
-                        oninit
-
-                          /*
-                           * Creating one "option" widget for each private key in GnuPG database.
-                           */
-                          clear-widget:x:/../*/_event?value
-                          p5.crypto.list-private-keys
-                          for-each:x:/-/*
-                            create-widget
-                              parent:x:/../*/_event?value
-                              element:option
-                              innerValue:x:/@_dp/#?name
-
-                      text:pgp-pwd
-                        .advanced
-                        .data-field:password
-                        info:Password
-                        type:password
-                        title:Supply your PGP key's password here, or leave it empty if you don't want to cryptographically sign your modules.
-                        autocomplete:new-password
-                        onkeydown:@"if (event.keyCode == 13) {p5.$('start-build').raise('onclick');return false;}"
-                        disabled
-                      label
-                        .advanced
-                        innerValue:Supply an optional declaration for your Bazar(s).
-                        for:bazar-declaration
-                      div
-                        .advanced
-                        widgets
-                          micro.widgets.codemirror
-                            .data-field:bazar
-                            oninit
-
-                              /*
-                               * Loading the default Bazar declaration file, and changing the content
-                               * of textarea to lambda of file.
-                               */
-                              load-file:/modules/bazar/configuration/bazars.hl
-                              lambda2hyper:x:/@load-file/*/*
-                              p5.web.widgets.find:x:/../*/_event?value
-                                element:textarea
-                              set-widget-property:x:/-/*/*?value
-                                innerValue:x:/@lambda2hyper?value
-
-                  div
-                    class:right
-                    widgets
-                      button:start-build
-                        innerValue:Build
-                        onclick
-
-                          /*
-                           * Making sure we show obscurer, for then to invoke "real" implementation.
-                           */
-                          set-widget-property:build-obscurer
-                            style:"display:block;"
-                          p5.web.send-javascript:@"p5.$('start-build').raise('.onclick');"
-
-                        .onclick
-
-                          /*
-                           * Serializing above wizard-form, to figure out which modules user
-                           * wants to include in his main build.
-                           */
-                          micro.form.serialize:modules
-
-                          /*
-                           * Wrapping invocation in a try/catch block, in case an exception occurs.
-                           */
-                          try
-
-                            /*
-                             * Adding all "core modules" user wants to add to his main distribution.
-                             */
-                            for-each:x:@"/@micro.form.serialize/*/""=:bool:true""(/~core-modules-)?name"
-                              split:x:/@_dp?value
-                                =:core-modules-
-                              add:x:/..try/*/micro.evaluate.file/*/core
-                                src:x:/@split/0?name
-
-                            /*
-                             * Checking if user wants to include his web.config file.
-                             */
-                            if:x:/@micro.form.serialize/*/include-web-config?value
-
-                              /*
-                               * User wants to include his web.config file.
-                               */
-                              add:x:/..try/*/micro.evaluate.file
-                                src
-                                  include-web-config:bool:true
-
-                              /*
-                               * Passing in startup-app
-                               */
-                              add:x:/+/*
-                                src:x:/@micro.form.serialize/*/startup-app
-                              add:x:/..try/*/micro.evaluate.file
-                                src
-
-                              /*
-                               * Passing in version
-                               */
-                              add:x:/+/*
-                                src:x:/@micro.form.serialize/*/version
-                              add:x:/..try/*/micro.evaluate.file
-                                src
-
-                              /*
-                               * Passing in MySQL connection string.
-                               */
-                              add:x:/+/*
-                                src:x:/@micro.form.serialize/*/mysql-connection-string
-                              add:x:/..try/*/micro.evaluate.file
-                                src
-
-                              /*
-                               * Passing in PayPal settings.
-                               */
-                              add:x:/+/*
-                                src:x:/@micro.form.serialize/*(/paypal-sandbox|/paypal-production|/paypal-type)
-                              add:x:/..try/*/micro.evaluate.file
-                                src
-
-                            /*
-                             * Checking if user wants to build additional modules.
-                             */
-                            if:x:/@micro.form.serialize/*/additional-modules?value
-
-                              /*
-                               * User wants to build additional modules.
-                               *
-                               * Adding an [additional-modules] argument, and adding each
-                               * module user wants to build as an addition module into this
-                               * argument.
-                               */
-                              add:x:/..try/*/micro.evaluate.file
-                                src:modules
-                              for-each:x:@"/@micro.form.serialize/*/""=:bool:true""(/~additional-modules-)?name"
-                                split:x:/@_dp?value
-                                  =:additional-modules-
-                                add:x:/..try/*/micro.evaluate.file/*/modules
-                                  src:x:/@split/0?name
-
-                              /*
-                               * Checking if caller supplied a PGP password, at which
-                               * point we add PGP fingerprint and password as an argument.
-                               */
-                              if:x:/@micro.form.serialize/*/password?value
-                                and:x:/@micro.form.serialize/*/password?value
-                                  !=:
-
-                                /*
-                                 * User supplied a password, and wants to cryptographically sign some modules.
-                                 */
-                                add:x:/..try/*/micro.evaluate.file
-                                  src:x:/@micro.form.serialize/*(/fingerprint|/password)
-
-                              /*
-                               * Passing in the "Bazar declaration" to build process.
-                               */
-                              eval-x:x:/+/*/*
-                              add:x:/..try/*/micro.evaluate.file
-                                src
-                                  bazar:x:/@micro.form.serialize/*/bazar?value
-
-                            /*
-                             * Evaluating file responsible for creating our build.
-                             */
-                            micro.evaluate.file:@HYPERBUILD/helpers/build.hl
-                              core
-
-                            /*
-                             * Hiding obscurer again, and providing feedback to user.
-                             */
-                            set-widget-property:build-obscurer
-                              style:"display:none;"
-                            micro.windows.info:Build was successfully completed
-                              class:micro-windows-info success
-
-                          catch
-
-                            /*
-                             * Hiding obscurer again, and showing exception message to user.
-                             */
-                            set-widget-property:build-obscurer
-                              style:"display:none;"
-                            micro.windows.info:x:/..catch/*/message?value
-                              class:micro-windows-info warning
+                        /*
+                         * Serializing form, and creating our build.
+                         */
+                        micro.form.serialize:build-configuration
+                        add:x:/../*/micro.evaluate.file/*/core
+                          src:x:@"/@micro.form.serialize/*/""=:bool:true""?name"
+                        micro.evaluate.file:@HYPERBUILD/helpers/build.hl
+                          include-web-config:bool:true
+                          core

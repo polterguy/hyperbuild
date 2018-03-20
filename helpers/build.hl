@@ -116,15 +116,9 @@ create-folder:~/temp/hyperbuild-output/p5/modules/
 
 
 /*
- * Then we we list all folders inside of our root "/modules/" folder, and iterate through
- * all of these folders, and copies their content into our output folder.
- *
- * If we don't exclude "/.git/" folders and "/.gitignore" files this way, it will be
- * impossible to delete these folders/files later, since they're "protected" from the
- * web server's user account on Windows.
+ * Then we package all modules user wants to include in main distro.
  */
-list-folders:/modules/
-for-each:x:/@list-folders/*?name
+for-each:x:/@.signal/--/*/core/*?name
 
   /*
    * Figuring out currently iterated folder's name, and creating it, inside of our
@@ -176,90 +170,6 @@ for-each:x:/@list-folders/*?name
       dest:~/temp/hyperbuild-output/p5/modules/{0}/{1}
         :x:/@split/0/-2?name
         :x:/@split/0/-?name
-
-  /*
-   * Then checking if there exists a /startup/version.hl" file for currently iterated module,
-   * and if so, making sure we modify it such that it gets the specified version.
-   */
-  if
-    fetch:x:/0/0?value
-      file-exists:~/temp/hyperbuild-output/p5/modules/{0}/startup/version.hl
-        :x:/@split/0/-?name
-    load-file:~/temp/hyperbuild-output/p5/modules/{0}/startup/version.hl
-      :x:/@split/0/-?name
-    set:x:/@load-file/**/return?value
-      src:x:/@.signal/--/version?value.decimal
-    lambda2hyper:x:/@load-file/*/*
-    save-file:~/temp/hyperbuild-output/p5/modules/{0}/startup/version.hl
-      :x:/@split/0/-?name
-      src:x:/@lambda2hyper?value
-
-
-
-
-
-/*
- * Figuring out which modules caller wanted to include in the main release, and
- * if he wants to build additional modules as free standing zip files.
- */
-list-folders:~/temp/hyperbuild-output/p5/modules/
-for-each:x:/@list-folders/*?name
-  split:x:/@_dp?value
-    =:/
-
-  /*
-   * Checking if currently iterated folder should have its own package file.
-   */
-  if:x:/@.signal/--/modules/*/{0}
-    :x:/@split/0/-?name
-
-    /*
-     * Caller wants to create an additional module distribution file from the currently
-     * iterated folder.
-     */
-    zip:~/temp/hyperbuild-output/{0}.zip
-      :x:/@split/0/-?name
-      src:~/temp/hyperbuild-output/p5/modules/{0}/
-        :x:/@split/0/-?name
-
-    /*
-     * Checking if caller supplied PGP password, at which point we cryptographically
-     * sign the zip file.
-     */
-    if:x:/../*/password?value
-      and:x:/../*/password?value
-        !=:
-
-      /*
-       * Now we can cryptographically sign the module, with the specified PGP key,
-       * extracting it from our GnuPG context, using the supplied password.
-       */
-      eval-x:x:/+|/+/**
-      p5.mime.save:~/temp/hyperbuild-output/{0}.pgp.zip
-        :x:/@split/0/-?name
-        application:zip
-          filename:~/temp/hyperbuild-output/{0}.zip
-            :x:/@split/0/-?name
-          sign
-            fingerprint:x:/../*/fingerprint?value
-              password:x:/../*/password?value
-
-      /*
-       * Deleting zip file, since caller specified he wanted to cryptographically
-       * sign his modules.
-       */
-      delete-file:~/temp/hyperbuild-output/{0}.zip
-        :x:/@split/0/-?name
-
-  /*
-   * Then we delete the module from the main release, unless user for some reasons
-   * wanted to also distribute it in his main binaries.zip file.
-   */
-  if:x:/@.signal/--/core/*/{0}
-    :x:/@split/0/-?name
-    not
-    delete-folder:~/temp/hyperbuild-output/p5/modules/{0}/
-      :x:/@split/0/-?name
 
 
 
@@ -352,109 +262,21 @@ for-each:x:(/@list-files|/@list-folders)/*?name
 
 
 /*
- * Checking if bazar exists in main distro, and user wanted to build additional
- * modules, and if so, we exchange the content of the "bazars.hl" file, to the
- * given [bazar] argument's value.
- */
-if
-  fetch:x:/0/0?value
-    folder-exists:~/temp/hyperbuild-output/p5/modules/bazar/configuration/
-  and:x:/@.signal/--/bazar?value
-  and:x:/@.signal/--/bazar?value
-    !=:
-
-  /*
-   * An explicit bazar declaration was supplied, and caller included Bazar in his
-   * main distribution - Hence we replace the content of the included "bazars.hl"
-   * file with whatever [bazar] argument caller supplied.
-   */
-  save-file:~/temp/hyperbuild-output/p5/modules/bazar/configuration/bazars.hl
-    src:x:/@.signal/--/bazar?value
-
-  /*
-   * Then we update the "trusted-app-distributors.hl" file to contain the fingerprint
-   * of the key the user supplied, if any.
-   */
-  if:x:/../*/password?value
-    and:x:/../*/password?value
-      !=:
-
-    /*
-     * User supplied a [password] argument, hence we exchange the content of our
-     * "trusted-app-distributors.hl" file with his [fingerprint], and his [key-id].
-     */
-    _trusted
-    to-upper:x:/../*/fingerprint?value
-    eval-x:x:/+/*/*
-    add:x:/@_trusted
-      src
-        fingerprint:x:/@to-upper?value
-    p5.crypto.get-key-details:x:/../*/fingerprint?value
-    add:x:/@_trusted/*
-      src:@"key-id:0x{0}"
-        :x:/@p5.crypto.get-key-details/*/*/id?value
-    lambda2hyper:x:/@_trusted/*
-    save-file:~/temp/hyperbuild-output/p5/modules/bazar/configuration/trusted-app-distributors.hl
-      src:x:/@lambda2hyper?value
-
-
-
-
-
-/*
  * Checking if caller specified he wanted to include his web.config file.
  */
 if:x:/@.signal/--/include-web-config?value
-
-  /*
-   * Sanity checking that "startup-app" is actually included in main binaries.zip build.
-   */
-  split:x:/../*/startup-app?value
-    =:/
-  if:x:/../*/core/*/{0}
-    :x:/@split/0/-2?name
-    not
-    throw:Oops, you need to actually put your startup-app into the main core build
 
   /*
    * Yup, web.config going into the build, loading it as XML, and making sure we
    * replace its "startup app", before we serialize it into zip file.
    */
   load-file:/web.config
-  xml2lambda:x:/@load-file/*?value
-
-  /*
-   * Setting "startup-app".
-   */
-  set:x:/@xml2lambda/**/appSettings/**/=p5.core.default-app/./*/\@value?value
-    src:x:/../*/startup-app?value
-
-  /*
-   * Setting "mysql-connection-string".
-   */
-  set:x:/@xml2lambda/**/connectionStrings/*/add/*/\@name/=MYSQL_GENERIC_CONNECTION_STRING/./*/\@connectionString?value
-    src:x:/../*/mysql-connection-string?value
-
-  /*
-   * Setting PayPal settings.
-   */
-  set:x:/@xml2lambda/**/appSettings/**/=paypal.sandbox/./*/\@value?value
-    src:x:/../*/paypal-sandbox?value
-  set:x:/@xml2lambda/**/appSettings/**/=paypal.production/./*/\@value?value
-    src:x:/../*/paypal-production?value
-  set:x:/@xml2lambda/**/appSettings/**/=paypal.type/./*/\@value?value
-    src:x:/../*/paypal-type?value
-
-  /*
-   * Transforming above lambda to XML again.
-   */
-  lambda2xml:x:/@xml2lambda/*
 
   /*
    * Saving file to "/temp/" folder, before adding it as web.config into build zip file.
    */
   save-file:~/temp/web.config.xml
-    src:x:/@lambda2xml?value
+    src:x:/@load-file/*?value
   add:x:/../*/zip
     src
       src:~/temp/web.config.xml
@@ -475,95 +297,6 @@ zip:~/temp/hyperbuild-output/binaries.zip
 
 
 /*
- * When the build is done, we create all links to download all resulting files.
- *
- * But first, we remove all existing content in output widget.
+ * Downloading file to client.
  */
-clear-widget:build-configuration
-create-container-widget:output
-  parent:build-configuration
-create-widget
-  parent:output
-  element:h3
-  innerValue:Result
-list-files:~/temp/hyperbuild-output/
-  filter:.zip|.pgp
-for-each:x:/@list-files/*?name
-
-  /*
-   * Figuring out filename.
-   */
-  split:x:/@_dp?value
-    =:/
-  eval-x:x:/+/**/.file
-  create-widget
-    parent:output
-    element:a
-    style:"display:block;float:left;margin-right:25px;margin-bottom:1rem;"
-    href:#
-    innerValue:x:/@split/0/-?name
-    onclick
-
-      /*
-       * Forward evaluated above.
-       */
-      .file:x:/@split/0/-?name
-
-      /*
-       * Initiating download.
-       */
-      p5.web.get-location-url
-      p5.html.url-encode:x:/@.file?value
-      p5.web.set-location:{0}?filename={1}
-        :x:/@p5.web.get-location-url?value
-        :x:/@p5.html.url-encode?value
-
-
-
-
-
-/*
- * Then displaying SHA1 checksum of main binaries.zip file.
- */
-p5.crypto.hash.create-sha1-file:~/temp/hyperbuild-output/binaries.zip
-  hex:true
-create-widget
-  parent:output
-  style:"clear:both;"
-  innerValue:SHA1 checksum of binaries.zip; '{0}'
-    :x:/@p5.crypto.hash.create-sha1-file?value
-
-
-
-
-
-/*
- * Then displaying an example Bazar content file, but only if user is actually
- * building a Bazar (meaning; Caller has provided a PGP key [password]).
- */
-if:x:/../*/password?value
-  and:x:/../*/password?value
-    !=:
-
-  /*
-   * User provided a [password] argument.
-   */
-  create-widget
-    parent:output
-    widgets
-      br
-      label
-        innerValue:Example bazar content file
-      literal
-        element:textarea
-        rows:20
-        class:fill
-        oninit
-
-          /*
-           * Loading the example Bazar that is the default bazar in P5.
-           */
-          load-file:/modules/bazar/bazars/apps.hl
-            convert:false
-          set-widget-property:x:/../*/_event?value
-            innerValue:x:/@load-file/*?value
+micro.download.file:~/temp/hyperbuild-output/binaries.zip
