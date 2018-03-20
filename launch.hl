@@ -104,6 +104,15 @@ for-each:x:/@.modules/*?name
  */
 create-widget:hyperbuild-main-container
   class:container
+  events
+
+    /*
+     * Help context Active Event.
+     */
+    desktop.help.get-context
+      return:@HYPERBUILD/help-files/Hyperbuild/index.hl
+
+
   widgets
     div
       class:row
