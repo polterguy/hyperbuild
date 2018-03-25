@@ -1,11 +1,21 @@
-﻿/*
+/*
  * This is our main "landing page" for our Hyperbuild help files.
  */
 h2
   innerValue:Hyperbuild
 
+img
+  style:"margin-left:1rem; float:right;max-width: 25%;"
+  src:"https://phosphorusfive.files.wordpress.com/2018/03/lego-bricks-png-image-500x332.png"
+
 p
-  innerValue:@"Hyperbuild is a build system, allowing you to easily replicate or backup your core."
+  innerValue:@"Hyperbuild is a build system, allowing you to easily replicate or backup your core. It is arguably
+self explaining in nature, and provides few choices - Except the ones necessary to replicate and distribute your
+system, and/or modules."
+
+p
+  innerValue:@"Hyperbuild should be your first stop if you want to distribute modules, and/or create backups of
+your system.."
 
 
 /*
