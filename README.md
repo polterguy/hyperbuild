@@ -10,7 +10,8 @@ containing whatever modules you want to distribute in your core.
 
 ## Installation
 
-Hyperbuild is automatically installed when you install Phosphorus Five.
+To install Hyperbuild, download its latest release zip file, and install it through Phosphorus Five's
+_"Desktop"_ module.
 
 ## License
 
