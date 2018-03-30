@@ -3,12 +3,11 @@
  */
 container
   element:a
-  class:desktop-app button shaded
+  class:jumbo-button
   title:Replicate your system in seconds
   widgets
+    span
+      innerValue:Hyperbuild
     literal
       element:span
-      class:icon-sphere desktop-app-icon
-    span
-      class:desktop-app-text
-      innerValue:Hyperbuild
+      class:icon-sphere
