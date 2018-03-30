@@ -1,9 +1,12 @@
 # Hyperbuild
 
-Hyperbuild is the build system for [Phosphorus Five](https://github.com/polterguy/phosphorusfive), which allows you to
-reproduce your Phosphorus Five installation, any ways you see fit, and create a binary release or backup of your system.
+Hyperbuild is the build system for Phosphorus Five that allows you to
+reproduce and backup your Phosphorus Five installation.
 This is done by taking the existing system's state, whatever that is, minus any data, users, passwords, settings, etc -
-And create a binary release of the system.
+And create a binary release of the system. It also allows you to create your own custom build,
+containing whatever modules you want to distribute in your core.
+
+![screenshot](https://phosphorusfive.files.wordpress.com/2018/03/hyperbuild-screenshot1.png)
 
 ## Installation
 
