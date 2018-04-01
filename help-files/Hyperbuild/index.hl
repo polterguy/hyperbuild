@@ -6,7 +6,7 @@ h2
 
 img
   style:"margin-left:1rem; float:right;max-width: 25%;"
-  src:"https://phosphorusfive.files.wordpress.com/2018/03/lego-bricks-png-image-500x332.png"
+  src:"https://phosphorusfive.files.wordpress.com/2018/04/lego-icon.png"
 
 p
   innerValue:@"Hyperbuild is a build system, allowing you to easily replicate or backup your core. It is arguably
