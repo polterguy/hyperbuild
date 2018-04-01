@@ -118,7 +118,7 @@ create-folder:~/temp/hyperbuild-output/p5/modules/
 /*
  * Then we package all modules user wants to include in main distro.
  */
-for-each:x:/@.signal/--/*/core/*?name
+for-each:x:/@.signal/--/core/*?name
 
   /*
    * Figuring out currently iterated folder's name, and creating it, inside of our
