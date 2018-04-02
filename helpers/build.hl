@@ -46,7 +46,7 @@ create-folder:~/temp/hyperbuild-output/p5/
 
 
 /*
- * Copying all relevant files into output folder.
+ * Copying all relevant "bin" files into output folder.
  *
  * First creating our "/bin/" folder, and copying all DLLs.
  */
@@ -75,6 +75,21 @@ copy-file:/Default.aspx
  */
 copy-file:/favicon.ico
   dest:~/temp/hyperbuild-output/p5/
+
+
+
+
+
+/*
+ * Copying all relevant "media" files into output folder.
+ * These are "complex favicons" for things such as iPhones, Androids, etc.
+ *
+ * First creating our "/media/" folder, and copying all files within it.
+ */
+create-folder:~/temp/hyperbuild-output/p5/media/
+list-files:/media/
+copy-file:x:/@list-files/*?name
+  dest:~/temp/hyperbuild-output/p5/media/
 
 
 
